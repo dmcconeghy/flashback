@@ -39,6 +39,10 @@
   </div>
 </header>
 <body>
+  
+  {% for category, msg in get_flashed_messages(with_categories=True) %}
+  <div class="alert alert-{{category}}">{{ msg }}</div>
+  {% endfor %}
 
   {% block content %}{% endblock %}
   <script src="../static/app.js"></script>
