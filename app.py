@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 from flask_debugtoolbar import DebugToolbarExtension
 import billboard
+from forms import DateSearchForm
 
 app = Flask(__name__)
 
@@ -20,14 +21,20 @@ if __name__ == "__main__":
 # db.create_all()
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def root():
+
+   
     return render_template("index.html")
 
-@app.route("/test")
-def test():
+@app.route("/search", methods=["GET", "POST"])
+def search():
 
-    chart = billboard.ChartData('hot-100')
+    form = DateSearchForm()
 
+    if form.validate_on_submit():
+        date = form.date.data
+        chart = billboard.ChartData('hot-100', date=date)
+        return render_template("results.html", chart=chart)
 
-    return render_template("test.html", chart=chart)
+    return render_template("search.html", form=form)

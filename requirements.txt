@@ -1,10 +1,13 @@
+bcrypt==3.2.0
 beautifulsoup4==4.10.0
 billboard.py==7.0.0
 blinker==1.4
 certifi==2021.10.8
+cffi==1.15.0
 charset-normalizer==2.0.12
 click==8.0.4
 Flask==2.0.3
+Flask-Bcrypt==0.7.1
 Flask-DebugToolbar==0.11.0
 Flask-SQLAlchemy==2.5.1
 Flask-WTF==1.0.0
@@ -14,7 +17,9 @@ itsdangerous==2.1.0
 Jinja2==3.0.3
 MarkupSafe==2.1.0
 psycopg2-binary==2.9.3
+pycparser==2.21
 requests==2.27.1
+six==1.16.0
 soupsieve==2.3.1
 SQLAlchemy==1.4.31
 urllib3==1.26.8

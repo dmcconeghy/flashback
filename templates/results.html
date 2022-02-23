@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %} TEST {% endblock %}
+
+
+{% block content %} 
+<div class="container-fluid">
+	<div class="row bg-info">
+		<div class="col-md-9"> THIS WEEK {{chart.date}}
+		</div>
+		<div class="col-md-1"> LAST WEEK
+		</div>
+		<div class="col-md-1"> PEAK POSITION
+		</div>
+		<div class="col-md-1"> WEEKS ON CHART
+		</div>
+	</div>
+        
+    {% for entry in chart %}
+    
+        <div class="row">
+            <div class="col-md-1 text-center align-middle"> {{entry.rank}}
+            </div>
+            <div class="col-md-1 text-center align-middle"><object data="{{entry.image}}" type="image/png">
+                <img class="img-thumbnail" src="../static/media/musical_placeholder.jpg" alt="default album image">
+                </object>
+            </div>
+            <div class="col-md-7 text-left align-middle">
+                {{entry.title}} by {{entry.artist}}
+            </div>
+            <div class="col-md-1 text-center"> {{entry.lastPos}}
+            </div>
+            <div class="col-md-1 text-center">{{entry.peakPos}}
+            </div>
+            <div class="col-md-1 text-center">{{entry.weeks}}
+            </div>
+        </div>
+        
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+<!-- <li>
+                    
+                    {{entry.title}} by {{entry.artist}}
+                    
+                </li> -->
+
+                <!-- <div class="card" style="width: 18rem">
+                    <img src="{{ entry.image }}" class="card-img-top" alt=""/>
+                    <div class="div card-body">
+                        <img class="card-image" src="../static/media/musical_placeholder.jpg">
+                        <h5 class="card-title">{{entry.rank}}:{{entry.title}} by {{entry.artist|truncate(20)}}</h5>
+                        <p class="card-text">Highest position: {{entry.peakPos}} </p>
+                        <p class="card-text">{{entry.weeks}} weeks on chart</p>
+                        
+                    </div>
+                </div> -->

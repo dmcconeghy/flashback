@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %} SEARCH {% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="div row">
+            <form id="date-search-form" method="POST" >
+                {{ form.hidden_tag() }} <!--add type=hidden form fields -->
+            
+                {% for field in form
+                    if field.widget.input_type != 'hidden' %}
+            
+                <p>
+                    {{ field.label }}
+                    {{ field }}
+            
+                    {% for error in field.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </p>
+            
+                {% endfor %}
+            
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div> 
+{% endblock %}
