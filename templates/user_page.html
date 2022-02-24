@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="user-info">
+    <h2>Hello {{ user.username }}</h2>
+    <img src="{{user.profile_img_url}}" width="50" height="50">
+</div>
+{% endblock %}

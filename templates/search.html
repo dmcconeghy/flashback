@@ -2,26 +2,26 @@
 
 {% block title %} SEARCH {% endblock %}
 {% block content %}
-    <div class="container">
+    <div class="container  pt-5">
         <div class="div row">
-            <form id="date-search-form" method="POST" >
+            <form id="date-search-form" class="form-control d-flex justify-content-center align-items-center" method="POST" >
                 {{ form.hidden_tag() }} <!--add type=hidden form fields -->
             
                 {% for field in form
                     if field.widget.input_type != 'hidden' %}
             
-                <p>
+                <span class="p-3">
                     {{ field.label }}
                     {{ field }}
             
                     {% for error in field.errors %}
                     {{ error }}
                     {% endfor %}
-                </p>
+                </span>
             
                 {% endfor %}
             
-                <button type="submit">Submit</button>
+                <button class="btn btn-primary d-flex justify-content-top " type="submit">Submit</button>
             </form>
         </div>
     </div> 

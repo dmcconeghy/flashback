@@ -4,14 +4,11 @@
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from datetime import date
+
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
-
-def connect_db(app):
-
-    db.app = app
-    db.init_app(app)
 
 # class Song(db.Model):
 #     """A specific song"""
@@ -53,7 +50,7 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.Text, nullable=False, unique=True)
@@ -108,16 +105,37 @@ class User(db.Model):
 
         return False
 
-# class Chart(db.Model):
-#     """A specific date's chart"""
+class Chart(db.Model):
+    """A specific date's chart"""
 
-#     __tablename__ = 'charts'
+    __tablename__ = 'charts'
 
-#     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-#     name = db.Column(db.String, nullable=False)
-#     date = db.Column(db.DateTime, nullable=False)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
 
-#     songs = db.relationship('Song')
+    # songs = db.relationship('Song')
+
+    @classmethod
+    def next_chart(cls, date):
+
+        
+
+        date_as_ordinal = date.toordinal()
+
+        next_chart = date_as_ordinal + 7
+
+        return date.fromordinal(next_chart)
+
+    @classmethod
+    def prior_chart(cls, date):
+
+        date_as_ordinal = date.toordinal()
+
+        prior_chart = date_as_ordinal - 7
+
+        return date.fromordinal(prior_chart)    
+    
 
 # class Favorite(db.Model):
 #     """User favorites"""
@@ -136,3 +154,8 @@ class User(db.Model):
 #     id = db.Column(db.Integer, autoincrement=True)
 #     chart_id = db.Column(db.Integer, db.Foreignkey('charts.id'), primary_key=True)
 #     song_id = db.Column(db.Integer, db.Foreignkey('songs.id'), primary_key=True)
+
+def connect_db(app):
+
+    db.app = app
+    db.init_app(app)

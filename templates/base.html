@@ -24,7 +24,8 @@
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="#" class="nav-link ps-5 pe-2 text-white">Features</a></li>
-        <li><a href="#" class="nav-link ps-2 pe-5 text-white">About</a></li>
+        <li><a href="#" class="nav-link ps-2 text-white">About</a></li>
+        <li><a href="/search" class="nav-link ps-2 pe-5 text-white">Search</a></li>
       </ul>
 
       <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -32,14 +33,24 @@
       </form> -->
 
       <div class="text-end">
+        {% if not g.user %}
         <a class="btn btn-outline-light me-2" href="/login">Login</a>
         <a class="btn btn-warning" href="/signup">Sign-up</a>
-      </div>
+        <a class="" href="/users/{{ g.user.username }}">
+          <img src="{{ g.user.profile_image_url }}" alt="{{ g.user.username }}">
+        </a>
+        <a class="btn btn-warning" href="/logout">Log Out</a>
+        {% else %}
+        <a class="" href="/users/{{ g.user.id }}">
+          <img src="{{ g.user.profile_img_url }}" alt="{{ g.user.username }}" width="38" height="38" class="rounded">
+        </a>
+        <a class="btn btn-warning" href="/logout">Log Out</a>
+        {% endif %}
     </div>
   </div>
 </header>
 <body>
-  
+
   {% for category, msg in get_flashed_messages(with_categories=True) %}
   <div class="alert alert-{{category}}">{{ msg }}</div>
   {% endfor %}

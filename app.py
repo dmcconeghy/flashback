@@ -1,46 +1,152 @@
-from flask import Flask, render_template, redirect, session, flash
-from flask_debugtoolbar import DebugToolbarExtension
+import os
 import billboard
-from forms import DateSearchForm, SignupForm
-from models import db, connect_db, User
+from datetime import date
+
+from flask import Flask, render_template, redirect, session, flash, g
+from flask_debugtoolbar import DebugToolbarExtension
+from forms import DateSearchForm, SignupForm, LoginForm
+from models import db, connect_db, User, Chart
+from werkzeug.exceptions import Unauthorized
+
+CURR_USER_KEY = 'current_user'
+CURR_CHART = 'current_date'
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'davessecret'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_ECHO'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'davessecret')
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
 
-# if __name__ == "__main__":
-#     app.run(debug=True)
-
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flashback'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-
-
 connect_db(app)
-db.create_all()
 
+################### BEFORE (Global User) ###################
 
-@app.route("/", methods=["GET", "POST"])
+@app.before_request
+def add_user_to_g():
+    """ Is a user logged in? Add them to flask global g"""
+
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+        
+    else:
+        g.user = None
+
+################### DO LOGIN/LOGOUT ###################
+
+def do_login(user):
+    """ Log in the user"""
+
+    session[CURR_USER_KEY] = user.id
+    session.permanent = False
+
+def do_logout():
+    """ Log the user out"""
+
+    if CURR_USER_KEY in session:
+        # session.pop(CURR_USER_KEY, None)
+        del session[CURR_USER_KEY]
+        
+################### ROOT ###################    
+
+@app.route('/', methods=['GET', 'POST'])
 def root():
     """ Returns the root / index homepage"""
-   
-    return render_template("index.html")
 
-@app.route("/search", methods=["GET", "POST"])
+    return render_template('index.html')
+
+################### SEARCH ################### 
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     """A testing route for searches"""
+
+    # def previously_fetched(validated_date):
+        # for all the charts in the db
+        # does our chart date exist already? 
+        # if found return true so that the db version can be returned.
+        # if absent return false so that we can use the API to fetch it.
+        # 
+        # 
+        # found_chart = (Chart
+        #             .query
+        #             .filter(Chart.date == validated_Date)
+        #             .all()) 
+        # if found_chart:
+        #     return True
+        # else:
+        #     return False
+
+    def validate_date(user_inputted_date):
+        """ 
+            Given the user inputted date, find the closest billboard chart.
+
+            Users input dates in the format YYYY-MM-DD. 
+            We grab the value of the day in its week (0-6).
+
+            Then we convert the inputted date to its Gregorian ordinal. 
+            Next we adjust the ordinal to find the closest tuesday using day_validator. 
+            Finally we return the date in the original format 
+        
+            Charts are released on Tuesdays but post-dated for the following Saturday.
+
+            While the API performs a similar calculation, we want to pre-exmptively exclude using it if we've already fetched that chart. 
+            So we must identify the date that the API *would* return and look for that first.  
+        
+        """
+        
+        weekday = user_inputted_date.weekday()
+
+        day_validator = {
+            '0' : -2,
+            '1' : -3,
+            '2' : 3,
+            '3' : 2,
+            '4' : 1,
+            '5' : 0,
+            '6' : -1
+        }
+
+        adjustment = day_validator.get(str(weekday))
+
+        date_as_ordinal = user_inputted_date.toordinal()
+
+        closest_tuesday = date_as_ordinal + adjustment
+
+        return date.fromordinal(closest_tuesday)
 
     form = DateSearchForm()
 
     if form.validate_on_submit():
-        date = form.date.data
-        chart = billboard.ChartData('hot-100', date=date)
-        return render_template("results.html", chart=chart)
+        inputted_date = form.date.data
+        validated_date = validate_date(inputted_date)
+
+         # Logic for checking if the date is in our db already goes here
+
+        fetched_chart = billboard.ChartData('hot-100', date=validated_date)
+
+        new_chart = Chart(
+            name=fetched_chart.name,
+            date=fetched_chart.date
+        )
+
+        db.session.add(new_chart)
+        db.session.commit()
+
+        return render_template("results.html", chart=fetched_chart)
 
     return render_template("search.html", form=form)
+
+################### CHARTS ################### 
+@app.route('/charts', methods=['GET', 'POST'])
+def show_list_of_charts():
+    """ This route returns a list of database stored charts """
+
+    charts = Chart.query.all()
+
+    return render_template('charts.html', charts=charts)
 
 ################### SIGNUP ###################
 
@@ -48,28 +154,96 @@ def search():
 def user_signup():
     """ Show a signup form"""
 
-    if 'username' in session:
-        return redirect(f"users/{session['username']}")
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+
+    # if 'username' in session:
+    #     return redirect(f"users/{session['username']}")
     
     form = SignupForm()
 
     if form.validate_on_submit():
-        username = form.username.data 
-        password = form.password.data
-        email = form.email.data
-        profile_img_url = form.profile_img_url.data
-        date_of_birth = form.date_of_birth.data
-
-        new_user = User.signup(username, password, email, profile_img_url, date_of_birth)
-
+       
+        user = User.signup( 
+            username = form.username.data, 
+            password = form.password.data,
+            email = form.email.data,
+            profile_img_url = form.profile_img_url.data or '/static/media/blank_profile.png',
+            date_of_birth = form.date_of_birth.data,
+        )
+       
         db.session.commit()
-        session['username'] = new_user.username
-        flash('Account created! Welcome, {new_user.username}.', 'success')
-        return redirect(f"/users/{new_user.username}")
 
-    return render_template("signup.html", form=form)
+        flash(f"Account created! Welcome, {user.username}.", 'success')
 
+        do_login(user)
+
+        return redirect(f"/users/{user.id}")
+
+    else:
+
+        return render_template("signup.html", form=form)
+
+################### USER ###################
+
+@app.route('/users/<int:user_id>')
+def show_user_page(user_id):
+    """Show a logged in user their personal user page"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+
+    return render_template("user_page.html", user=user)
 
 ################### LOGIN ###################
 
-# @app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """ Handle user login """
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data, form.password.data)
+
+        if user:
+            do_login(user)
+            flash(f"Welcome back, {user.username}!", "success")
+            return redirect("/")
+        
+        flash("Invalid username or password", "danger")
+
+    return render_template('login.html', form=form)
+
+################### LOGOUT ###################
+
+@app.route('/logout')
+def logout():
+    """Handle logout of user."""
+
+    do_logout()
+    flash(f"Logged out", "success")
+    
+    return redirect("/login")
+
+################### ERROR ###################
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """404 NOT FOUND page."""
+
+    return render_template('404.html'), 404
+
+################### AFTER (Caching) ###################
+@app.after_request
+def add_header(req):
+    """Add non-caching headers on every request."""
+
+    req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    req.headers["Pragma"] = "no-cache"
+    req.headers["Expires"] = "0"
+    req.headers['Cache-Control'] = 'public, max-age=0'
+    return req

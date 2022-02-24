@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Charts{% endblock %}
+
+{% block content %}
+<div class="div container pt-5">
+    
+    <ul>
+    {% for chart in charts %}
+    <li>Previous Chart: {{chart.prior_chart(chart.date.date())}}</li>    
+    <li>{{chart.name}} | {{chart.date.date()}}</li>
+    <li>Next Chart: {{chart.next_chart(chart.date.date())}}</li>
+       
+           
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
