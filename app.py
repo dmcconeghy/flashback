@@ -5,7 +5,7 @@ from datetime import date
 from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
-from models import db, connect_db, User, Chart
+from models import db, connect_db, User, Chart, Song
 from werkzeug.exceptions import Unauthorized
 
 CURR_USER_KEY = 'current_user'
@@ -58,7 +58,49 @@ def root():
 
     return render_template('index.html')
 
-################### SEARCH ################### 
+################### SEARCH ###################
+
+@app.route('/search/<string:chart_date>', methods=['GET', 'POST'])
+def chart_search(chart_date):
+    """ Searches for a chart in the database by date"""
+
+    chart_exists = Chart.query.filter(Chart.date == chart_date).all()
+
+    # Chart isn't in the database
+    if chart_exists == []:
+
+        fetched_chart = billboard.ChartData('hot-100', date=chart_date)
+
+        new_chart = Chart(
+            name=fetched_chart.name,
+            date=fetched_chart.date
+        )
+
+        db.session.add(new_chart)
+        
+        for entry in fetched_chart:
+
+            new_song = Song(
+                title = entry.title,
+                artist = entry.artist,
+                peak_pos = entry.peakPos,
+                last_pos = entry.lastPos,
+                weeks = entry.weeks,
+                rank = entry.rank,
+                isNew = entry.isNew,
+                chart_date = new_chart.date
+            )
+
+            db.session.add(new_song)
+
+        db.session.commit()
+
+        return render_template('results.html', chart=fetched_chart)
+
+    else:
+        flash('Chart already in database', 'success')
+        return redirect('/charts')
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     """A testing route for searches"""
@@ -147,6 +189,22 @@ def show_list_of_charts():
     charts = Chart.query.all()
 
     return render_template('charts.html', charts=charts)
+
+################### SONG/S ################### 
+@app.route('/songs')
+def show_list_of_songs():
+    """ Returns a list of database stored songs from queried charts """
+
+    songs = Song.query.all()
+
+    return render_template('songs.html', songs=songs)
+
+@app.route('/song/<int:song_id>')
+def show_song_details(song_id):
+
+    song = Song.query.get_or_404(song_id)
+
+    return render_template('song.html', song=song)
 
 ################### SIGNUP ###################
 

@@ -26,6 +26,8 @@
         <li><a href="#" class="nav-link ps-5 pe-2 text-white">Features</a></li>
         <li><a href="#" class="nav-link ps-2 text-white">About</a></li>
         <li><a href="/search" class="nav-link ps-2 pe-5 text-white">Search</a></li>
+        <li><a href="/charts" class="nav-link ps-2 pe-5 text-white">Charts</a></li>
+        <li><a href="/songs" class="nav-link ps-2 pe-5 text-white">Songs</a></li>
       </ul>
 
       <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -33,6 +35,7 @@
       </form> -->
 
       <div class="text-end">
+        <!-- This isn't working as intended -->
         {% if not g.user %}
         <a class="btn btn-outline-light me-2" href="/login">Login</a>
         <a class="btn btn-warning" href="/signup">Sign-up</a>

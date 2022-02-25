@@ -7,9 +7,13 @@
     
     <ul>
     {% for chart in charts %}
-    <li>Previous Chart: {{chart.prior_chart(chart.date.date())}}</li>    
-    <li>{{chart.name}} | {{chart.date.date()}}</li>
-    <li>Next Chart: {{chart.next_chart(chart.date.date())}}</li>
+  
+    <li>
+        <p>{{chart.name}} | {{chart.date.date()}}</p> 
+        <p>Previous Chart: {{chart.prior_chart(chart.date.date())}}</p>
+        <p>Next Chart: {{chart.next_chart(chart.date.date())}}</p> 
+    </li>
+ 
        
            
         {% endfor %}

@@ -10,25 +10,28 @@ from datetime import date
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
-# class Song(db.Model):
-#     """A specific song"""
+class Song(db.Model):
+    """A specific song"""
 
-#     __tablename__ = 'songs'
+    __tablename__ = 'songs'
 
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-#     # Billboard data as given from API calls
-#     # ChartData is fetched using ChartData(name, date=None, year=None, fetch=True, timeout=25)
-#     # ChartData's ChartEntry instance then includes:
+    # Billboard data as given from API calls
+    # ChartData is fetched using ChartData(name, date=None, year=None, fetch=True, timeout=25)
+    # ChartData's ChartEntry instance then includes:
+    # Presently, songs appear for EACH weekly billboard chart appearance. 
 
-#     title = db.Column(db.Text, nullable=False)
-#     artist = db.Column(db.Text, nullable=False)
-#     song_img_url = db.Column(db.Text)
-#     peak_pos = db.Column(db.Integer)
-#     last_pos = db.Column(db.Integer)
-#     weeks = db.Column(db.Integer)
-#     rank = db.Column(db.Integer, nullable=False)
-#     isNew = db.Column(db.Boolean)
+    title = db.Column(db.Text, nullable=False)
+    artist = db.Column(db.Text, nullable=False)
+    song_img_url = db.Column(db.Text)
+    peak_pos = db.Column(db.Integer)
+    last_pos = db.Column(db.Integer)
+    weeks = db.Column(db.Integer)
+    rank = db.Column(db.Integer)
+    isNew = db.Column(db.Boolean)
+
+    chart_date = db.Column(db.String, nullable=False)
 
 #     # iTunes data / Spotify data
 #     # see iTunes_Sample.json
@@ -43,7 +46,7 @@ db = SQLAlchemy()
 #     release_date = db.Column(db.DateTime)
 #     genre = db.Column(db.text)
 
-#     charts = db.relationship('Chart')
+#     chart = db.relationship('Chart', backref='songs')
 
 class User(db.Model):
     """An application user"""
@@ -119,8 +122,6 @@ class Chart(db.Model):
     @classmethod
     def next_chart(cls, date):
 
-        
-
         date_as_ordinal = date.toordinal()
 
         next_chart = date_as_ordinal + 7
@@ -143,8 +144,8 @@ class Chart(db.Model):
 #     __tablename__= 'favorites'
 
 #     id = db.Column(db.Integer, autoincrement=True)
-#     user_id = db.Column(db.Integer, db.Foreignkey('users.id', ondelete='cascade'), primary_key=True)
-#     song_id = db.Column(db.Integer, db.Foreignkey('songs.id'), primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), primary_key=True)
+#     song_id = db.Column(db.Integer, db.ForeignKey('songs.id'), primary_key=True)
 
 # class ChartedSongs(db.Model):
 #     """Joins a chart with its songs"""
@@ -152,8 +153,8 @@ class Chart(db.Model):
 #     __tablename__ = 'chartedsongs'
 
 #     id = db.Column(db.Integer, autoincrement=True)
-#     chart_id = db.Column(db.Integer, db.Foreignkey('charts.id'), primary_key=True)
-#     song_id = db.Column(db.Integer, db.Foreignkey('songs.id'), primary_key=True)
+#     chart_id = db.Column(db.Integer, db.ForeignKey('charts.id'), primary_key=True)
+#     song_id = db.Column(db.Integer, db.ForeignKey('songs.id'), primary_key=True)
 
 def connect_db(app):
 
