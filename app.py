@@ -1,6 +1,7 @@
 import os
 import billboard
-from datetime import date
+from datetime import date, timedelta
+import random
 
 from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
@@ -57,6 +58,14 @@ def root():
     """ Returns the root / index homepage"""
 
     return render_template('index.html')
+
+################### ABOUT ###################    
+
+@app.route('/about')
+def about():
+    """ Returns the about page"""
+
+    return render_template('about.html')
 
 ################### SEARCH ###################
 
@@ -180,6 +189,18 @@ def search():
         return render_template("results.html", chart=fetched_chart)
 
     return render_template("search.html", form=form)
+
+@app.route('/random', methods=['POST'])
+def random_chart():
+
+    earliest = date(1958, 8, 4)
+    latest = date.today()
+    
+    random_days_between = random.randrange((latest-earliest).days)
+
+    random_date = earliest + timedelta(days=random_days_between)
+
+    return redirect(f"/search/{random_date}")
 
 ################### CHARTS ################### 
 @app.route('/charts', methods=['GET', 'POST'])

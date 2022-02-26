@@ -1,3 +1,7 @@
 html {
     background-color: azure;
 }
+
+.nav-link:hover {
+    color: white;
+}

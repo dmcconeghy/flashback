@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, Email, Length, URL, Optional
 class DateSearchForm(FlaskForm):
     """Homepage route search for chart from a specific date"""
 
-    date = DateField("Enter a Date")
+    date = DateField("Enter a Date after August 4, 1958")
   
 class SignupForm(FlaskForm):
     """ Signup form for a new user"""

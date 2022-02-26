@@ -2,27 +2,41 @@
 
 {% block title %} SEARCH {% endblock %}
 {% block content %}
-    <div class="container  pt-5">
-        <div class="div row">
+    <div class="container text-center pt-5">
+        <h3 class="pb-5">Explore the Billboard Hot 100 Chart!</h3>
+        <div class="div row mx-auto">
+            <div class="div col-sm-10 col-md 6 col-lg-8 mx-auto">
             <form id="date-search-form" class="form-control d-flex justify-content-center align-items-center" method="POST" >
                 {{ form.hidden_tag() }} <!--add type=hidden form fields -->
             
                 {% for field in form
                     if field.widget.input_type != 'hidden' %}
-            
-                <span class="p-3">
-                    {{ field.label }}
-                    {{ field }}
-            
-                    {% for error in field.errors %}
-                    {{ error }}
-                    {% endfor %}
-                </span>
-            
+
+                <div class="m-3">
+                    <p class="m-1">
+                        <span class="p-1">
+                        {{ field.label }}
+                        </span>
+                    </p>
+                    <p class="m-2">
+                        <span class="p-2">
+                        {{ field }}
+                        </span>
+                    </p>
+                    <p>
+                        {% for error in field.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </p>
+                </div>
                 {% endfor %}
             
-                <button class="btn btn-primary d-flex justify-content-top " type="submit">Submit</button>
+                <button id="search" class="btn btn-small btn-primary justify-content-top" type="submit">Search</button>
+                <button id="randomize" class="btn btn-small btn-secondary justify-content-top mx-1" formaction="/random">Random</button>
             </form>
+
+
+            </div>
         </div>
     </div> 
 {% endblock %}

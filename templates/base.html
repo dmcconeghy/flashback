@@ -18,16 +18,16 @@
 <header class="p-3 bg-dark text-white">
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-      <a href="/" class="d-flex align-items-center fs-4 mb-2 mb-lg-0 text-white text-decoration-none">
-        FLASHBACK
+      <a href="/" class="d-flex align-items-center fs-4 mb-2 mb-lg-0  text-decoration-none">
+        <span class="text-warning">FLASH</span><span class="text-white">BACK</span>
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link ps-5 pe-2 text-white">Features</a></li>
-        <li><a href="#" class="nav-link ps-2 text-white">About</a></li>
-        <li><a href="/search" class="nav-link ps-2 pe-5 text-white">Search</a></li>
-        <li><a href="/charts" class="nav-link ps-2 pe-5 text-white">Charts</a></li>
-        <li><a href="/songs" class="nav-link ps-2 pe-5 text-white">Songs</a></li>
+        <li><a href="#" class="nav-link ps-5 pe-2 link-warning">Features</a></li>
+        <li><a href="/about" class="nav-link ps-2 link-warning">About</a></li>
+        <li><a href="/search" class="nav-link ps-2 link-warning">Search</a></li>
+        <li><a href="/charts" class="nav-link ps-2 link-warning">Charts</a></li>
+        <li><a href="/songs" class="nav-link ps-2 pe-5 link-warning">Songs</a></li>
       </ul>
 
       <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -42,7 +42,7 @@
         <a class="" href="/users/{{ g.user.username }}">
           <img src="{{ g.user.profile_image_url }}" alt="{{ g.user.username }}">
         </a>
-        <a class="btn btn-warning" href="/logout">Log Out</a>
+        
         {% else %}
         <a class="" href="/users/{{ g.user.id }}">
           <img src="{{ g.user.profile_img_url }}" alt="{{ g.user.username }}" width="38" height="38" class="rounded">
