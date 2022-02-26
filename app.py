@@ -227,6 +227,13 @@ def show_song_details(song_id):
 
     return render_template('song.html', song=song)
 
+@app.route('/songs/gallery')
+def show_song_gallery():
+    """ Returns a scrollable gallery of songs. """
+
+    songs = Song.query.all()
+
+    return render_template('song_gallery.html', songs=songs)
 ################### SIGNUP ###################
 
 @app.route('/signup', methods=['GET', 'POST'])
