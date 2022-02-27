@@ -2,6 +2,7 @@ import os
 import billboard
 from datetime import date, timedelta
 import random
+import requests 
 
 from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
@@ -190,7 +191,7 @@ def search():
 
     return render_template("search.html", form=form)
 
-@app.route('/random', methods=['POST'])
+@app.route('/random', methods=['GET', 'POST'])
 def random_chart():
 
     earliest = date(1958, 8, 4)
@@ -234,6 +235,34 @@ def show_song_gallery():
     songs = Song.query.all()
 
     return render_template('song_gallery.html', songs=songs)
+
+@app.route('/song/art/<int:song_id>', methods=['GET', 'POST'])
+def fetch_song_art(song_id):
+    """ 
+        Fetches a specific song's album art using the iTunes API.
+        This FAILS because requests executes BEFORE Song.query returns a result.  
+    
+    """
+    song = Song.query.get_or_404(song_id)
+
+    artist = song.artist
+    title = song.title
+
+    a = artist.replace(' ', '+')
+
+    t = title.replace(' ', '+')
+
+
+    r = requests.get('https://itunes.apple.com/search?term={{a}}&entity=musicArtist&limit=5').json()
+
+    return render_template('fetch_art.html', song=song, a=a, r=r)
+
+@app.route('/listing')
+def listing():
+
+    songs = Song.query.limit(5).all()
+
+    return render_template('listing.html', songs=songs)
 ################### SIGNUP ###################
 
 @app.route('/signup', methods=['GET', 'POST'])

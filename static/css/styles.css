@@ -2,7 +2,7 @@ html {
     background-color: azure;
 }
 
-.nav-link:hover {
+.nav .text-warning:hover {
     color: white;
 }
 
@@ -14,4 +14,125 @@ html {
   border-radius: 50%;
   top: 50%;
   transform: translateY(-50%);
+}
+
+/* LISTING STYLING */
+
+.tracks {
+  box-sizing: border-box;
+  width: 800px;
+  perspective: 400px;
+  
+}
+
+.tracks-animate-right {
+  perspective-origin: left;
+  animation: perspectiveAnimationright 2s;
+}
+
+.tracks-animate-left {
+  perspective-origin: right;
+  z-index: 99;
+  animation: perspectiveAnimationleft 2s;
+}
+
+@keyframes perspectiveAnimationright {
+  0% {
+  }
+  
+  100% {
+    transform: translateX(-100%) rotateY(-180deg);
+  }
+}
+
+@keyframes perspectiveAnimationleft {
+  0% { 
+  }
+  
+  100% {
+    transform: translateX(100%) rotateY(180deg);
+    
+  }
+}
+
+
+.track-list-container-left {
+  width: 380px;
+  height: 580px;
+  border: 20px solid black;
+  padding-top: 20px;
+  padding-bottom: 15px;
+  transform: rotatey(2deg);
+  background-color: antiquewhite;
+}
+
+.track-list-container-right {
+  width: 380px;
+  height: 580px;
+  border: 20px solid black;
+  padding-top: 20px;
+  padding-bottom: 15px;
+  transform: rotatey(-2deg);
+  background-color: antiquewhite;
+}
+
+.track-list-box {
+  width: 300px;
+  height: 100px;
+  border: 5px solid red;
+  position: relative;
+  left: 20px;
+}
+
+.track-box-upper {
+  position: relative;
+  border-bottom: 10px solid red;
+  padding-top: 2px;
+  height: 95px;
+  width: 290px;
+  
+}
+
+.track-list-box.odd {
+  background-color: pink
+}
+
+.track-list-box.even {
+  background-color: white;
+}
+
+.track-inner {
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  background-color: white;
+  border: 2px solid red;
+  height: 28px;
+  width: 250px;
+}
+
+.left-decor {
+  position: absolute;
+  left: -25px;
+  top: 2px;
+  background-color: red;
+  height: 20px;
+  width: 25px;
+  
+}
+
+.right-decor {
+  position: absolute;
+  right: -25px;
+  top: 2px;
+  background-color: red;
+  height: 20px;
+  width: 25px;
+}
+
+.track-box-lower {
+  position: absolute;
+  top: 59px;
+  height: 30px;
+  width: 290px;
 }

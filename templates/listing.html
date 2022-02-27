@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<h3 class="pl-3">Click a listing to see the animation-in-progress</h3>
+<div class="pl-3 pt-5 tracks d-flex">
+
+    <div id="tracks-left" class="track-list-container-left col-lg-6">
+
+        {% for song in songs %}
+        <div  class="track-list-box text-center {{ loop.cycle('odd', 'even')}}">
+
+            <div class="track-box-upper">
+                <p><strong>"{{song.title}}"</strong></p>
+            
+                <div class="track-inner">
+                    <div class="left-decor"></div>
+                    <p>{{song.artist}}</p>
+                    <span class="right-decor"></span>
+                </div>
+
+                <div class="track-box-lower ">
+                    <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div id="tracks-right"class="track-list-container-right col-lg-6">
+
+        {% for song in songs %}
+        <div class="track-list-box text-center {{ loop.cycle('even', 'odd')}}">
+
+            <div class="track-box-upper">
+                <p><strong>"{{song.title}}"</strong></p>
+            
+                <div class="track-inner">
+                    <div class="left-decor"></div>
+                    <p>{{song.artist}}</p>
+                    <span class="right-decor"></span>
+                </div>
+
+                <div class="track-box-lower ">
+                    <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

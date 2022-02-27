@@ -115,7 +115,7 @@ class Chart(db.Model):
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, unique=True)
 
     # songs = db.relationship('Song')
 

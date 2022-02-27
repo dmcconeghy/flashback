@@ -8,8 +8,8 @@
     <ul>
     {% for chart in charts %}
   
-    <li>
-        <p>{{chart.name}} | {{chart.date.date()}}</p> 
+    
+        <h5>{{chart.name}} | {{chart.date.date()}}</h5> 
         <p>Previous Chart: {{chart.prior_chart(chart.date.date())}}</p>
         <p>Next Chart: {{chart.next_chart(chart.date.date())}}</p> 
     </li>
