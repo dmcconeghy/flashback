@@ -16,7 +16,7 @@ CURR_CHART = 'current_date'
 app = Flask(__name__)
 
 if os.environ.get('MODE') == 'PRODUCTION': 
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgres://szvoiszrifvyqr:0eb57e014f7c084b28007b94b751bbba26d9d49a064d3e99b728074dfb003680@ec2-3-219-204-29.compute-1.amazonaws.com:5432/df3er12gfaoqho')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://szvoiszrifvyqr:0eb57e014f7c084b28007b94b751bbba26d9d49a064d3e99b728074dfb003680@ec2-3-219-204-29.compute-1.amazonaws.com:5432/df3er12gfaoqho')
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
 
