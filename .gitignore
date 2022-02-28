@@ -1,4 +1,3 @@
 venv
 flashback.code-workspace
 __pycache__
-dbsecrets.py
