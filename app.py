@@ -8,6 +8,7 @@ from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
 from models import db, connect_db, User, Chart, Song
+from secrets import SECRET_KEY
 from werkzeug.exceptions import Unauthorized
 
 CURR_USER_KEY = 'current_user'
@@ -19,7 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'davessecret')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', SECRET_KEY)
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
