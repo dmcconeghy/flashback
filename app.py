@@ -1,5 +1,6 @@
 
 import os
+import re
 import billboard
 from datetime import date, timedelta
 import random
@@ -14,14 +15,14 @@ from werkzeug.exceptions import Unauthorized
 
 CURR_USER_KEY = 'current_user'
 CURR_CHART = 'current_date'
+uri = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
+
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 
 app = Flask(__name__)
 
-if os.environ.get('MODE') == 'PRODUCTION':
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)   
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
-
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
