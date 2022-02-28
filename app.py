@@ -16,23 +16,17 @@ from werkzeug.exceptions import Unauthorized
 CURR_USER_KEY = 'current_user'
 CURR_CHART = 'current_date'
 
-
 app = Flask(__name__)
 
 if os.environ.get('MODE') == 'PRODUCTION':
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
-    
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)   
 else:
-    
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
-    app.config['SECRET_KEY'] = DB_SECRET_KEY
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1) or 'postgresql:///flashback'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret')
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
@@ -87,7 +81,7 @@ def about():
 def chart_search(chart_date):
     """ Searches for a chart in the database by date"""
 
-    chart_exists = Chart.query.filter(Chart.date == chart_date).all()
+    chart_exists = Chart.query.filter(Chart.chart_date == chart_date).all()
 
     # Chart isn't in the database
     if chart_exists == []:
@@ -96,7 +90,7 @@ def chart_search(chart_date):
 
         new_chart = Chart(
             name=fetched_chart.name,
-            date=fetched_chart.date
+            chart_date=fetched_chart.date
         )
 
         db.session.add(new_chart)
@@ -111,7 +105,7 @@ def chart_search(chart_date):
                 weeks = entry.weeks,
                 rank = entry.rank,
                 isNew = entry.isNew,
-                chart_date = new_chart.date
+                chart_date = new_chart.chart_date
             )
 
             db.session.add(new_song)
@@ -126,81 +120,20 @@ def chart_search(chart_date):
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    """A testing route for searches"""
+    """ 
+        Handles user-selected date requests.
+        Passes dates to chart_search
 
-    # def previously_fetched(validated_date):
-        # for all the charts in the db
-        # does our chart date exist already? 
-        # if found return true so that the db version can be returned.
-        # if absent return false so that we can use the API to fetch it.
-        # 
-        # 
-        # found_chart = (Chart
-        #             .query
-        #             .filter(Chart.date == validated_Date)
-        #             .all()) 
-        # if found_chart:
-        #     return True
-        # else:
-        #     return False
+        TODO: handle date range validation
 
-    def validate_date(user_inputted_date):
-        """ 
-            Given the user inputted date, find the closest billboard chart.
-
-            Users input dates in the format YYYY-MM-DD. 
-            We grab the value of the day in its week (0-6).
-
-            Then we convert the inputted date to its Gregorian ordinal. 
-            Next we adjust the ordinal to find the closest tuesday using day_validator. 
-            Finally we return the date in the original format 
-        
-            Charts are released on Tuesdays but post-dated for the following Saturday.
-
-            While the API performs a similar calculation, we want to pre-exmptively exclude using it if we've already fetched that chart. 
-            So we must identify the date that the API *would* return and look for that first.  
-        
-        """
-        
-        weekday = user_inputted_date.weekday()
-
-        day_validator = {
-            '0' : -2,
-            '1' : -3,
-            '2' : 3,
-            '3' : 2,
-            '4' : 1,
-            '5' : 0,
-            '6' : -1
-        }
-
-        adjustment = day_validator.get(str(weekday))
-
-        date_as_ordinal = user_inputted_date.toordinal()
-
-        closest_tuesday = date_as_ordinal + adjustment
-
-        return date.fromordinal(closest_tuesday)
+    """
 
     form = DateSearchForm()
 
     if form.validate_on_submit():
         inputted_date = form.date.data
-        validated_date = validate_date(inputted_date)
 
-         # Logic for checking if the date is in our db already goes here
-
-        fetched_chart = billboard.ChartData('hot-100', date=validated_date)
-
-        new_chart = Chart(
-            name=fetched_chart.name,
-            date=fetched_chart.date
-        )
-
-        db.session.add(new_chart)
-        db.session.commit()
-
-        return render_template("results.html", chart=fetched_chart)
+        return redirect(f"/search/{inputted_date}")
 
     return render_template("search.html", form=form)
 
@@ -224,6 +157,25 @@ def show_list_of_charts():
     charts = Chart.query.all()
 
     return render_template('charts.html', charts=charts)
+
+@app.route('/chart/<string:req_chart_date>')
+def show_chart(req_chart_date):
+    """ 
+        Display a specific chart and its songs
+    """
+
+    chart_exists = Chart.query.filter(Chart.chart_date == req_chart_date).limit(1).all()
+
+    if chart_exists != []:
+        # Limit to 1 until bug with multiple version of chart is fixed.
+        charts = chart_exists 
+    else:    
+        charts = Chart.query.filter(Chart.chart_date == req_chart_date).limit(1).all()
+
+    songs = Song.query.filter(Song.chart_date == req_chart_date).order_by(Song.rank.asc()).all()
+
+    print(charts, chart_exists)
+    return render_template('chart_results.html', charts=charts, songs=songs)
 
 ################### SONG/S ################### 
 @app.route('/songs')
@@ -273,7 +225,7 @@ def fetch_song_art(song_id):
 @app.route('/listing')
 def listing():
 
-    songs = Song.query.limit(5).all()
+    songs = Song.query.limit(20).all()
 
     return render_template('listing.html', songs=songs)
 ################### SIGNUP ###################

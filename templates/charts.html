@@ -3,20 +3,62 @@
 {% block title %}Charts{% endblock %}
 
 {% block content %}
-<div class="div container pt-5">
-    
-    <ul>
-    {% for chart in charts %}
-  
-    
-        <h5>{{chart.name}} | {{chart.date.date()}}</h5> 
-        <p>Previous Chart: {{chart.prior_chart(chart.date.date())}}</p>
-        <p>Next Chart: {{chart.next_chart(chart.date.date())}}</p> 
-    </li>
- 
-       
+
+<div class="container-fluid pt-5">
+
+    <h1>Billboard's HOT 100</h1>
+
+</div>
+
+<div class="container-fluid pt-5">
+	<div class="row">
+		<div class="col-md-6">
+            <h3>Chart Date</h3>
+        </div>
+        <div class="col-md-2">
+            <h3>Previous Chart</h3>
+        </div>
+        <div class="col-md-2">
+            <h3>Next Chart</h3>
+        </div>
+        <div class="col-md-2">
+            <h3>XX</h3>
+        </div>
+        {% for chart in charts %}
+
+            <div class="col-md-12">
+                
+                <div class="row">
+                    
+                    <div class="col-md-6">
+                        <h5> <a href="chart/{{ chart.chart_date }}">{{chart.chart_date}}</a></h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>
+                                    <a href="/search/{{chart.prior_chart(chart.chart_date)}}">
+                                        {{chart.prior_chart(chart.chart_date)}}
+                                    </a>
+                                </p>
            
+                            </div>
+                            <div class="col-md-4">
+                                <p>
+                                    <a href="/search/{{chart.next_chart(chart.chart_date)}}">
+                                        {{chart.next_chart(chart.chart_date)}}
+                                    </a>
+                                </p> 
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         {% endfor %}
-    </ul>
+    
+    </div>
 </div>
 {% endblock %}

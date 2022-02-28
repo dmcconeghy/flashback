@@ -115,23 +115,23 @@ class Chart(db.Model):
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    date = db.Column(db.DateTime, nullable=False, unique=True)
+    chart_date = db.Column(db.Date, nullable=False, unique=True)
 
     # songs = db.relationship('Song')
 
     @classmethod
-    def next_chart(cls, date):
+    def next_chart(cls, get_date):
 
-        date_as_ordinal = date.toordinal()
+        date_as_ordinal = get_date.toordinal()
 
         next_chart = date_as_ordinal + 7
 
         return date.fromordinal(next_chart)
 
     @classmethod
-    def prior_chart(cls, date):
+    def prior_chart(cls, get_date):
 
-        date_as_ordinal = date.toordinal()
+        date_as_ordinal = get_date.toordinal()
 
         prior_chart = date_as_ordinal - 7
 

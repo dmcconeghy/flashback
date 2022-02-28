@@ -3,30 +3,33 @@
 {% block title %}{% endblock %}
 
 {% block content %}
-<h3 class="pl-3">Click a listing to see the animation-in-progress</h3>
-<div class="pl-3 pt-5 tracks d-flex">
+<div class="bg-dark">
+<h3 class="pl-3">WIP jukebox animation</h3>
+<div id="jukebox-tracks" class="pl-3 pt-5 tracks d-flex  col">
 
     <div id="tracks-left" class="track-list-container-left col-lg-6">
 
         {% for song in songs %}
-        <div  class="track-list-box text-center {{ loop.cycle('odd', 'even')}}">
+        {% if loop.index0 < 5 %} 
+            <div  class="track-list-box text-center {{ loop.cycle('odd', 'even')}}">
 
-            <div class="track-box-upper">
-                <p><strong>"{{song.title}}"</strong></p>
-            
-                <div class="track-inner">
-                    <div class="left-decor"></div>
-                    <p>{{song.artist}}</p>
-                    <span class="right-decor"></span>
-                </div>
+                <div class="track-box-upper">
+                    <p><strong>"<a href="/song/{{song.id}}">{{song.title | truncate(20) }}"</a>"</strong></p>
+                
+                    <div class="track-inner">
+                        <div class="left-decor"></div>
+                        <p>{{song.artist  | truncate(30) }}</p>
+                        <span class="right-decor"></span>
+                    </div>
 
-                <div class="track-box-lower ">
-                    <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                    <div class="track-box-lower ">
+                        <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                    </div>
+
                 </div>
 
             </div>
-
-        </div>
+        {% endif %}
         {% endfor %}
 
     </div>
@@ -34,27 +37,90 @@
     <div id="tracks-right"class="track-list-container-right col-lg-6">
 
         {% for song in songs %}
-        <div class="track-list-box text-center {{ loop.cycle('even', 'odd')}}">
+        {% if loop.index0 >= 5 and loop.index0 < 10  %}
+            <div class="track-list-box text-center {{ loop.cycle('even', 'odd')}}">
 
-            <div class="track-box-upper">
-                <p><strong>"{{song.title}}"</strong></p>
-            
-                <div class="track-inner">
-                    <div class="left-decor"></div>
-                    <p>{{song.artist}}</p>
-                    <span class="right-decor"></span>
-                </div>
+                <div class="track-box-upper">
+                    <p><strong>"<a href="/song/{{song.id}}">{{song.title | truncate(20) }}"</a></strong></p>
+                
+                    <div class="track-inner">
+                        <div class="left-decor"></div>
+                        <p>{{song.artist  | truncate(30) }}</p>
+                        <span class="right-decor"></span>
+                    </div>
 
-                <div class="track-box-lower ">
-                    <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                    <div class="track-box-lower ">
+                        <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                    </div>
+
                 </div>
 
             </div>
-
-        </div>
+        {% endif %}
         {% endfor %}
 
     </div>
 
+    <div id="tracks-left-back" class="track-list-container-left col-lg-6">
+
+        {% for song in songs %}
+        {% if loop.index0 >= 10 and loop.index0 < 15 %} 
+            <div  class="track-list-box text-center {{ loop.cycle('odd', 'even')}}">
+
+                <div class="track-box-upper">
+                    <p><strong>"<a href="/song/{{song.id}}">{{song.title | truncate(20) }}"</a>"</strong></p>
+                
+                    <div class="track-inner">
+                        <div class="left-decor"></div>
+                        <p>{{song.artist  | truncate(30) }}</p>
+                        <span class="right-decor"></span>
+                    </div>
+
+                    <div class="track-box-lower ">
+                        <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                    </div>
+
+                </div>
+
+            </div>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+
+    <div id="tracks-right-back" class="track-list-container-right col-lg-6">
+
+        {% for song in songs %}
+        {% if loop.index0 >= 15 and loop.index0 < 20 %}
+            <div class="track-list-box text-center {{ loop.cycle('even', 'odd')}}">
+
+                <div class="track-box-upper">
+                    <p><strong>"<a href="/song/{{song.id}}">{{song.title | truncate(20) }}"</a></strong></p>
+                
+                    <div class="track-inner">
+                        <div class="left-decor"></div>
+                        <p>{{song.artist  | truncate(30) }}</p>
+                        <span class="right-decor"></span>
+                    </div>
+
+                    <div class="track-box-lower ">
+                        <p><strong>Top-100 #{{song.rank}} on {{song.chart_date}}</strong></p>
+                    </div>
+
+                </div>
+
+            </div>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+
+
+</div>
+</div>
+<div class="d-flex col-lg-24 mx-auto justify-content-center">
+    <div class="float-left" id="tracks-left-click"><h2>LEFT</h2></div> 
+   
+    <div class="float-right" id="tracks-right-click"><h2>RIGHT</h2></div>
 </div>
 {% endblock %}

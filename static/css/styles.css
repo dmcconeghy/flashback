@@ -27,12 +27,14 @@ html {
 
 .tracks-animate-right {
   perspective-origin: left;
+  z-index:1;
   animation: perspectiveAnimationright 2s;
+  
 }
 
 .tracks-animate-left {
   perspective-origin: right;
-  z-index: 99;
+  z-index:1;
   animation: perspectiveAnimationleft 2s;
 }
 
@@ -55,14 +57,13 @@ html {
   }
 }
 
-
 .track-list-container-left {
   width: 380px;
   height: 580px;
   border: 20px solid black;
   padding-top: 20px;
   padding-bottom: 15px;
-  transform: rotatey(2deg);
+  transform: rotateY(2deg);
   background-color: antiquewhite;
 }
 
@@ -72,7 +73,7 @@ html {
   border: 20px solid black;
   padding-top: 20px;
   padding-bottom: 15px;
-  transform: rotatey(-2deg);
+  transform: rotateY(-2deg);
   background-color: antiquewhite;
 }
 
