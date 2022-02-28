@@ -5,7 +5,7 @@ from datetime import date, timedelta
 import random
 import requests
 
-from dbsecrets import DB_SECRET_KEY
+import dbsecrets
 from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
@@ -15,7 +15,7 @@ from werkzeug.exceptions import Unauthorized
 
 CURR_USER_KEY = 'current_user'
 CURR_CHART = 'current_date'
-database_secret_key = DB_SECRET_KEY
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 app = Flask(__name__)
@@ -34,7 +34,7 @@ else:
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1) or 'postgresql:///flashback'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', database_secret_key)
+app.config['SECRET_KEY'] = os.environ.get(dbsecrets.DB_SECRET_KEY, SECRET_KEY)
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
