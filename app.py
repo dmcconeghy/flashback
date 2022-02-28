@@ -15,7 +15,6 @@ from werkzeug.exceptions import Unauthorized
 
 CURR_USER_KEY = 'current_user'
 CURR_CHART = 'current_date'
-SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 app = Flask(__name__)
@@ -27,14 +26,16 @@ app = Flask(__name__)
 #     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
 
 if os.environ.get('MODE') == 'PRODUCTION':
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
+    
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
+    app.config['SECRET_KEY'] = dbsecrets.DB_SECRET_KEY
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1) or 'postgresql:///flashback'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['SECRET_KEY'] = os.environ.get(dbsecrets.DB_SECRET_KEY, SECRET_KEY)
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
