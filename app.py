@@ -5,7 +5,7 @@ from datetime import date, timedelta
 import random
 import requests
 
-from dbsecrets import DB_SECRET_KEY
+
 from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
@@ -30,6 +30,7 @@ if os.environ.get('MODE') == 'PRODUCTION':
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
     
 else:
+    from dbsecrets import DB_SECRET_KEY
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///flashback')
     app.config['SECRET_KEY'] = DB_SECRET_KEY
 
