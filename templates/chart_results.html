@@ -19,10 +19,12 @@
 	</div>
     {% endfor %}
         
-    {% for song in songs %}
+    {% for song, appearance in results %}
+    
+
     
         <div class="row">
-            <div class="col-sm-1 text-center align-middle"> {{song.rank}}
+            <div class="col-sm-1 text-center align-middle"> {{appearance.rank}}
             </div>
             <div class="col-sm-1 ">
                 <img class="img-fluid img-thumbnail" src="../static/media/missing_album_art.svg" alt="default album image" width="50px">
@@ -30,14 +32,14 @@
             <div class="col-sm-7 text-left align-middle">
                 {{song.title}} by {{song.artist}}
             </div>
-            <div class="col-sm-1 text-center"> {{song.last_pos}}
+            <div class="col-sm-1 text-center"> {{appearance.last_pos}}
             </div>
-            <div class="col-sm-1 text-center">{{song.peak_pos}}
+            <div class="col-sm-1 text-center">{{appearance.peak_pos}}
             </div>
-            <div class="col-sm-1 text-center">{{song.weeks}}
+            <div class="col-sm-1 text-center">{{appearance.weeks}}
             </div>
         </div>
-        
+    
     {% endfor %}
 </div>
 

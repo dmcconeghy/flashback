@@ -7,7 +7,10 @@
     
    <p>Title:  {{song.title}}</p>
    <p>Artist:  {{song.artist}}</p>
-   <p>Appears on:  {{song.chart_date}}</p>
+   <p>Appears on:  {% for appearance in appearances %}
+      {{appearance.chart_date}}
+      {% endfor %}
+   </p>
 
 </div>
 {% endblock %}

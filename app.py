@@ -1,4 +1,3 @@
-
 import os
 import re
 import billboard
@@ -9,7 +8,7 @@ import requests
 from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
-from models import db, connect_db, User, Chart, Song
+from models import db, connect_db, User, Chart, Song, ChartAppearance
 
 from werkzeug.exceptions import Unauthorized
 
@@ -91,15 +90,36 @@ def chart_search(chart_date):
         new_chart = Chart(
             name=fetched_chart.name,
             chart_date=fetched_chart.date
+            # entries=fetch_chart.entries.json()
         )
 
         db.session.add(new_chart)
+        db.session.commit()
         
         for entry in fetched_chart:
 
-            new_song = Song(
-                title = entry.title,
-                artist = entry.artist,
+            song_exists = Song.query.filter(Song.title == entry.title and Song.artist == entry.artist).first()
+
+            if song_exists == [] or song_exists == None:
+            
+                new_song = Song(
+                    title = entry.title,
+                    artist = entry.artist,
+                    
+                )
+
+                db.session.add(new_song)
+                db.session.commit()
+
+                unique_song_id = new_song.id
+            
+            else:
+               
+               unique_song_id = song_exists.id
+
+            new_appearance = ChartAppearance(
+                chart_id = new_chart.id,
+                song_id = unique_song_id,
                 peak_pos = entry.peakPos,
                 last_pos = entry.lastPos,
                 weeks = entry.weeks,
@@ -108,15 +128,27 @@ def chart_search(chart_date):
                 chart_date = new_chart.chart_date
             )
 
-            db.session.add(new_song)
+            db.session.add(new_appearance)
 
         db.session.commit()
 
+        # This use of fetched_chart is incorrect. 
+        # We want to be using our songs/appearances data
+        # And not the raw returned API results. 
         return render_template('results.html', chart=fetched_chart)
 
     else:
         flash('Chart already in database', 'success')
-        return redirect('/charts')
+        return redirect(f"/chart/{chart_date}")
+
+@app.route('/test')
+def test():
+
+    song = Song.query.filter(Song.title == 'Volare' and Song.artist == 'Bobby Rydell').first()
+    
+    print(song.id)
+
+    return render_template('test.html', song=song)
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -164,18 +196,28 @@ def show_chart(req_chart_date):
         Display a specific chart and its songs
     """
 
-    chart_exists = Chart.query.filter(Chart.chart_date == req_chart_date).limit(1).all()
+    charts = Chart.query.filter(Chart.chart_date == req_chart_date).limit(1).all()
+    
+    if charts == []:
+        return redirect(f"/search/{req_chart_date}")
 
-    if chart_exists != []:
-        # Limit to 1 until bug with multiple version of chart is fixed.
-        charts = chart_exists 
-    else:    
-        charts = Chart.query.filter(Chart.chart_date == req_chart_date).limit(1).all()
+    songs = (
+        Song
+        .query
+        .join(ChartAppearance, Song.id == ChartAppearance.song_id)
+        .filter(ChartAppearance.chart_date == req_chart_date)
+        .all()
+        )
 
-    songs = Song.query.filter(Song.chart_date == req_chart_date).order_by(Song.rank.asc()).all()
+    appearances = (
+        ChartAppearance
+        .query
+        .join(Song, ChartAppearance.song_id == Song.id)
+        .filter(ChartAppearance.chart_date == req_chart_date)
+        .all()
+        )
 
-    print(charts, chart_exists)
-    return render_template('chart_results.html', charts=charts, songs=songs)
+    return render_template('chart_results.html', charts=charts, results=zip(songs, appearances))
 
 ################### SONG/S ################### 
 @app.route('/songs')
@@ -184,6 +226,8 @@ def show_list_of_songs():
 
     songs = Song.query.all()
 
+    # todo: add appearances join query
+
     return render_template('songs.html', songs=songs)
 
 @app.route('/song/<int:song_id>')
@@ -191,7 +235,10 @@ def show_song_details(song_id):
 
     song = Song.query.get_or_404(song_id)
 
-    return render_template('song.html', song=song)
+    appearances = ChartAppearance.query.filter(ChartAppearance.song_id == song_id).all()
+    print(f"BEHOLD", appearances[0].chart_date)
+
+    return render_template('song.html', song=song, appearances=appearances)
 
 @app.route('/songs/gallery')
 def show_song_gallery():

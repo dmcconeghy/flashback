@@ -25,13 +25,8 @@ class Song(db.Model):
     title = db.Column(db.Text, nullable=False)
     artist = db.Column(db.Text, nullable=False)
     song_img_url = db.Column(db.Text)
-    peak_pos = db.Column(db.Integer)
-    last_pos = db.Column(db.Integer)
-    weeks = db.Column(db.Integer)
-    rank = db.Column(db.Integer)
-    isNew = db.Column(db.Boolean)
 
-    chart_date = db.Column(db.String, nullable=False)
+    appearance = db.relationship('ChartAppearance', backref='charted_song')
 
 #     # iTunes data / Spotify data
 #     # see iTunes_Sample.json
@@ -46,7 +41,64 @@ class Song(db.Model):
 #     release_date = db.Column(db.DateTime)
 #     genre = db.Column(db.text)
 
-#     chart = db.relationship('Chart', backref='songs')
+class ChartAppearance(db.Model):
+    """ 
+    
+        Joins songs and charts.
+
+        This is a many (songs) to many (charts) relationship.
+
+        Each row is 1 song and the details of its chart appearance on a chart.
+
+        Songs appear 1x for each chart appearance. 
+
+        Charts appear once for every song they contain (e.g, 100x each). 
+
+    """
+
+    __tablename__ = 'appearances'
+
+    id = db.Column(db.Integer, autoincrement=True)
+    chart_id = db.Column(db.Integer, db.ForeignKey('charts.id', ondelete='CASCADE'), primary_key=True)
+    song_id = db.Column(db.Integer, db.ForeignKey('songs.id', ondelete='CASCADE'), primary_key=True)
+
+    chart_date = db.Column(db.String, nullable=False)
+
+    peak_pos = db.Column(db.Integer) # peak to date
+    last_pos = db.Column(db.Integer)
+    weeks = db.Column(db.Integer)
+    rank = db.Column(db.Integer)
+    isNew = db.Column(db.Boolean)
+
+class Chart(db.Model):
+    """A specific date's chart"""
+
+    __tablename__ = 'charts'
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    chart_date = db.Column(db.Date, nullable=False, unique=True)
+
+    appearance = db.relationship('ChartAppearance')
+
+
+    @classmethod
+    def next_chart(cls, get_date):
+
+        date_as_ordinal = get_date.toordinal()
+
+        next_chart = date_as_ordinal + 7
+
+        return date.fromordinal(next_chart)
+
+    @classmethod
+    def prior_chart(cls, get_date):
+
+        date_as_ordinal = get_date.toordinal()
+
+        prior_chart = date_as_ordinal - 7
+
+        return date.fromordinal(prior_chart)
 
 class User(db.Model):
     """An application user"""
@@ -108,36 +160,6 @@ class User(db.Model):
 
         return False
 
-class Chart(db.Model):
-    """A specific date's chart"""
-
-    __tablename__ = 'charts'
-
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    chart_date = db.Column(db.Date, nullable=False, unique=True)
-
-    # songs = db.relationship('Song')
-
-    @classmethod
-    def next_chart(cls, get_date):
-
-        date_as_ordinal = get_date.toordinal()
-
-        next_chart = date_as_ordinal + 7
-
-        return date.fromordinal(next_chart)
-
-    @classmethod
-    def prior_chart(cls, get_date):
-
-        date_as_ordinal = get_date.toordinal()
-
-        prior_chart = date_as_ordinal - 7
-
-        return date.fromordinal(prior_chart)    
-    
-
 # class Favorite(db.Model):
 #     """User favorites"""
 
@@ -145,15 +167,6 @@ class Chart(db.Model):
 
 #     id = db.Column(db.Integer, autoincrement=True)
 #     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), primary_key=True)
-#     song_id = db.Column(db.Integer, db.ForeignKey('songs.id'), primary_key=True)
-
-# class ChartedSongs(db.Model):
-#     """Joins a chart with its songs"""
-
-#     __tablename__ = 'chartedsongs'
-
-#     id = db.Column(db.Integer, autoincrement=True)
-#     chart_id = db.Column(db.Integer, db.ForeignKey('charts.id'), primary_key=True)
 #     song_id = db.Column(db.Integer, db.ForeignKey('songs.id'), primary_key=True)
 
 def connect_db(app):
