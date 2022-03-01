@@ -1,3 +1,4 @@
+asgiref==3.5.0
 bcrypt==3.2.0
 beautifulsoup4==4.10.0
 billboard.py==7.0.0

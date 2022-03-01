@@ -5,7 +5,6 @@
 
 {% block content %} 
 <div class="container-fluid col-sm-12 col-md-10 col-lg-10 col-xl-8 col-xxl-6">
-    {% for chart in charts %}
     <h1>The {{chart.name}} on {{chart.chart_date}} </h1>
 	<div class="row bg-info">
 		<div class="col-sm-9"> THIS WEEK {{chart.date}}
@@ -17,11 +16,8 @@
 		<div class="col-sm-1 small"> WEEKS ON CHART
 		</div>
 	</div>
-    {% endfor %}
         
     {% for song, appearance in results %}
-    
-
     
         <div class="row">
             <div class="col-sm-1 text-center align-middle"> {{appearance.rank}}

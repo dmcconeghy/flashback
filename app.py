@@ -9,6 +9,7 @@ from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
 from models import db, connect_db, User, Chart, Song, ChartAppearance
+from sqlalchemy import and_, true
 
 from werkzeug.exceptions import Unauthorized
 
@@ -29,7 +30,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret')
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
-# db.drop_all()
+db.drop_all()
 db.create_all()
 
 ################### BEFORE (Global User) ###################
@@ -76,51 +77,46 @@ def about():
     return render_template('about.html')
 
 ################### SEARCH ###################
+@app.route('/exists/<string:chart_date>', methods=['GET'])
+def chart_exists(chart_date):
+
+    chart = Chart.query.filter(Chart.chart_date == chart_date).first()
+    print("CHART:", chart)
+
+    if chart == [] or chart == None:
+        return redirect(f"/search/{chart_date}")
+    else:
+        flash('Chart already in database', 'success')
+        return redirect(f"/chart/{chart_date}")
+
 
 @app.route('/search/<string:chart_date>', methods=['GET', 'POST'])
 def chart_search(chart_date):
-    """ Searches for a chart in the database by date"""
+    """ 
+    Creates a chart entry and populates the db with songs and appearance data.
+    """
 
-    chart_exists = Chart.query.filter(Chart.chart_date == chart_date).all()
+    fetched_chart = billboard.ChartData('hot-100', date=chart_date)
 
-    # Chart isn't in the database
-    if chart_exists == []:
+    new_chart = Chart(
+        name=fetched_chart.name,
+        chart_date=fetched_chart.date
+        # consider fetching chartData for entries?
+    )
 
-        fetched_chart = billboard.ChartData('hot-100', date=chart_date)
+    db.session.add(new_chart)
+    db.session.commit()
 
-        new_chart = Chart(
-            name=fetched_chart.name,
-            chart_date=fetched_chart.date
-            # entries=fetch_chart.entries.json()
-        )
+    for entry in fetched_chart:
 
-        db.session.add(new_chart)
-        db.session.commit()
-        
-        for entry in fetched_chart:
+        # Check if it is in our db already
+        song_exists = Song.query.filter(and_(Song.title == entry.title, Song.artist == entry.artist)).first()
 
-            song_exists = Song.query.filter(Song.title == entry.title and Song.artist == entry.artist).first()
-
-            if song_exists == [] or song_exists == None:
-            
-                new_song = Song(
-                    title = entry.title,
-                    artist = entry.artist,
-                    
-                )
-
-                db.session.add(new_song)
-                db.session.commit()
-
-                unique_song_id = new_song.id
-            
-            else:
-               
-               unique_song_id = song_exists.id
+        if song_exists != [] and song_exists != None:
 
             new_appearance = ChartAppearance(
                 chart_id = new_chart.id,
-                song_id = unique_song_id,
+                song_id = song_exists.id,
                 peak_pos = entry.peakPos,
                 last_pos = entry.lastPos,
                 weeks = entry.weeks,
@@ -130,24 +126,44 @@ def chart_search(chart_date):
             )
 
             db.session.add(new_appearance)
+            db.session.commit()
 
-        db.session.commit()
+        else:
 
-        # This use of fetched_chart is incorrect. 
-        # We want to be using our songs/appearances data
-        # And not the raw returned API results. 
-        return render_template('results.html', chart=fetched_chart)
+            new_song = Song(
+                title = entry.title, 
+                artist = entry.artist
+            )
 
-    else:
-        flash('Chart already in database', 'success')
-        return redirect(f"/chart/{chart_date}")
+            db.session.add(new_song)
+            db.session.commit()
 
+            new_appearance = ChartAppearance(
+                chart_id = new_chart.id,
+                song_id = new_song.id,
+                peak_pos = entry.peakPos,
+                last_pos = entry.lastPos,
+                weeks = entry.weeks,
+                rank = entry.rank,
+                isNew = entry.isNew,
+                chart_date = new_chart.chart_date
+            )
+
+            db.session.add(new_appearance)
+            db.session.commit()
+    
+
+    return redirect(f"/chart/{chart_date}")
+
+   
 @app.route('/test')
 def test():
 
     song = Song.query.filter(Song.title == 'Volare' and Song.artist == 'Bobby Rydell').first()
+
+    charts = Chart.query.filter(Chart.chart_date == '2015-08-15').all()
     
-    print(song.id)
+    print(charts)
 
     return render_template('test.html', song=song)
 
@@ -157,7 +173,7 @@ def search():
         Handles user-selected date requests.
         Passes dates to chart_search
 
-        TODO: handle date range validation
+        todo: handle date range validation
 
     """
 
@@ -165,12 +181,12 @@ def search():
 
     if form.validate_on_submit():
         inputted_date = form.date.data
-
-        return redirect(f"/search/{inputted_date}")
-
+        
+        return redirect(f"/exists/{inputted_date}")
+        
     return render_template("search.html", form=form)
 
-@app.route('/random', methods=['GET', 'POST'])
+@app.route('/random')
 def random_chart():
 
     earliest = date(1958, 8, 4)
@@ -179,9 +195,10 @@ def random_chart():
     random_days_between = random.randrange((latest-earliest).days)
 
     random_date = earliest + timedelta(days=random_days_between)
-
-    return redirect(f"/search/{random_date}")
-
+ 
+    return redirect(f"/exists/{random_date}")
+    
+    
 ################### CHARTS ################### 
 @app.route('/charts', methods=['GET', 'POST'])
 def show_list_of_charts():
@@ -191,16 +208,15 @@ def show_list_of_charts():
 
     return render_template('charts.html', charts=charts)
 
-@app.route('/chart/<string:req_chart_date>')
+@app.route('/chart/<string:req_chart_date>', methods=['GET'])
 def show_chart(req_chart_date):
     """ 
         Display a specific chart and its songs
     """
 
-    charts = Chart.query.filter(Chart.chart_date == req_chart_date).limit(1).all()
-    
-    if charts == []:
-        return redirect(f"/search/{req_chart_date}")
+    chart = Chart.query.filter(Chart.chart_date == req_chart_date).first()
+
+    print(chart)
 
     songs = (
         Song
@@ -218,7 +234,7 @@ def show_chart(req_chart_date):
         .all()
         )
 
-    return render_template('chart_results.html', charts=charts, results=zip(songs, appearances))
+    return render_template('chart_results.html', chart=chart, results=zip(songs, appearances))
 
 ################### SONG/S ################### 
 @app.route('/songs')

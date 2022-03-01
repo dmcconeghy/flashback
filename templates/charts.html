@@ -31,13 +31,13 @@
                 <div class="row">
                     
                     <div class="col-md-6">
-                        <h5> <a href="chart/{{ chart.chart_date }}">{{chart.chart_date}}</a></h5>
+                        <h5> <a href="/chart/{{ chart.chart_date }}">{{chart.chart_date}}</a></h5>
                     </div>
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-4">
                                 <p>
-                                    <a href="/search/{{chart.prior_chart(chart.chart_date)}}">
+                                    <a href="/exists/{{chart.prior_chart(chart.chart_date)}}">
                                         {{chart.prior_chart(chart.chart_date)}}
                                     </a>
                                 </p>
@@ -45,7 +45,7 @@
                             </div>
                             <div class="col-md-4">
                                 <p>
-                                    <a href="/search/{{chart.next_chart(chart.chart_date)}}">
+                                    <a href="/exists/{{chart.next_chart(chart.chart_date)}}">
                                         {{chart.next_chart(chart.chart_date)}}
                                     </a>
                                 </p> 

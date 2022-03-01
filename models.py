@@ -26,7 +26,7 @@ class Song(db.Model):
     artist = db.Column(db.Text, nullable=False)
     song_img_url = db.Column(db.Text)
 
-    appearance = db.relationship('ChartAppearance', backref='charted_song')
+    # appearance = db.relationship('ChartAppearance')
 
 #     # iTunes data / Spotify data
 #     # see iTunes_Sample.json
@@ -79,7 +79,7 @@ class Chart(db.Model):
     name = db.Column(db.String, nullable=False)
     chart_date = db.Column(db.Date, nullable=False, unique=True)
 
-    appearance = db.relationship('ChartAppearance')
+    # appearance = db.relationship('ChartAppearance')
 
 
     @classmethod
