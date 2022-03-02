@@ -213,7 +213,7 @@ def search():
         
     return render_template("search.html", form=form)
 
-@app.route('/random')
+@app.route('/random', methods=['GET', 'POST'])
 def random_chart():
 
     earliest = datetime.date(1958, 8, 4)
