@@ -100,6 +100,8 @@ class Chart(db.Model):
 
         return date.fromordinal(prior_chart)
 
+    
+
 class User(db.Model):
     """An application user"""
 

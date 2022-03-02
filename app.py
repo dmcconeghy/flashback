@@ -1,16 +1,16 @@
 import os
 import re
 import billboard
-from datetime import date, timedelta
 import random
 import requests
 
-from flask import Flask, render_template, redirect, session, flash, g
+
+import datetime
+from flask import Flask, render_template, redirect, session, flash, g, request
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
 from models import db, connect_db, User, Chart, Song, ChartAppearance
-from sqlalchemy import and_, true
-
+from sqlalchemy import and_
 from werkzeug.exceptions import Unauthorized
 
 CURR_USER_KEY = 'current_user'
@@ -80,15 +80,31 @@ def about():
 @app.route('/exists/<string:chart_date>', methods=['GET'])
 def chart_exists(chart_date):
 
-    chart = Chart.query.filter(Chart.chart_date == chart_date).first()
-    print("CHART:", chart)
+    def previously_fetched(date_to_be_checked):
+        """ 
+            Does our chart date exist already? 
+            Yes? Return db version.
+            No? Fetch it. 
+        """
+        
+        found_chart = (Chart
+                    .query
+                    .filter(Chart.chart_date == date_to_be_checked)
+                    .all()) 
 
-    if chart == [] or chart == None:
-        return redirect(f"/search/{chart_date}")
-    else:
-        flash('Chart already in database', 'success')
+        if found_chart:
+            return True
+        else:
+            return False
+
+    if previously_fetched(chart_date):
+        flash('Chart found', 'success')
         return redirect(f"/chart/{chart_date}")
+        
+    else:
 
+        return redirect(f"/search/{chart_date}")
+        
 
 @app.route('/search/<string:chart_date>', methods=['GET', 'POST'])
 def chart_search(chart_date):
@@ -111,24 +127,47 @@ def chart_search(chart_date):
 
         # Check if it is in our db already
         song_exists = Song.query.filter(and_(Song.title == entry.title, Song.artist == entry.artist)).first()
-
+        
         if song_exists != [] and song_exists != None:
+            
+            # Check that the appearance data is different (e.g, 1990-11-11 Unchained Meloday appears twice)
+            if ChartAppearance.query.filter(and_(ChartAppearance.song_id == song_exists.id, ChartAppearance.chart_date == fetched_chart.date)).first():
+                new_song = Song(
+                    title = entry.title, 
+                    artist = entry.artist
+                )
 
-            new_appearance = ChartAppearance(
-                chart_id = new_chart.id,
-                song_id = song_exists.id,
-                peak_pos = entry.peakPos,
-                last_pos = entry.lastPos,
-                weeks = entry.weeks,
-                rank = entry.rank,
-                isNew = entry.isNew,
-                chart_date = new_chart.chart_date
-            )
+                db.session.add(new_song)
+                db.session.commit()
 
-            db.session.add(new_appearance)
-            db.session.commit()
+                new_appearance = ChartAppearance(
+                    chart_id = new_chart.id,
+                    song_id = new_song.id,
+                    peak_pos = entry.peakPos,
+                    last_pos = entry.lastPos,
+                    weeks = entry.weeks,
+                    rank = entry.rank,
+                    isNew = entry.isNew,
+                    chart_date = new_chart.chart_date
+                )
+
+            else: 
+                new_appearance = ChartAppearance(
+                    chart_id = new_chart.id,
+                    song_id = song_exists.id,
+                    peak_pos = entry.peakPos,
+                    last_pos = entry.lastPos,
+                    weeks = entry.weeks,
+                    rank = entry.rank,
+                    isNew = entry.isNew,
+                    chart_date = new_chart.chart_date
+                )
+
+                db.session.add(new_appearance)
+                db.session.commit()
 
         else:
+            
 
             new_song = Song(
                 title = entry.title, 
@@ -153,19 +192,7 @@ def chart_search(chart_date):
             db.session.commit()
     
 
-    return redirect(f"/chart/{chart_date}")
-
-   
-@app.route('/test')
-def test():
-
-    song = Song.query.filter(Song.title == 'Volare' and Song.artist == 'Bobby Rydell').first()
-
-    charts = Chart.query.filter(Chart.chart_date == '2015-08-15').all()
-    
-    print(charts)
-
-    return render_template('test.html', song=song)
+    return redirect(f"/chart/{fetched_chart.date}")
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -189,12 +216,12 @@ def search():
 @app.route('/random')
 def random_chart():
 
-    earliest = date(1958, 8, 4)
-    latest = date.today()
+    earliest = datetime.date(1958, 8, 4)
+    latest = datetime.date.today()
     
     random_days_between = random.randrange((latest-earliest).days)
 
-    random_date = earliest + timedelta(days=random_days_between)
+    random_date = earliest + datetime.timedelta(days=random_days_between) 
  
     return redirect(f"/exists/{random_date}")
     
@@ -208,28 +235,36 @@ def show_list_of_charts():
 
     return render_template('charts.html', charts=charts)
 
-@app.route('/chart/<string:req_chart_date>', methods=['GET'])
+@app.route('/chart/<string:req_chart_date>', methods=['GET', 'POST'])
 def show_chart(req_chart_date):
     """ 
         Display a specific chart and its songs
+
+        This route must occur AFTER validation through exists.
+
+        todo: fix issues with duplicate entries cf. "Unchained Melody" from 10.06.90 - 3.23.91
+            There are two version on this chart but they're indistinguishable in single API data calls.
+            The original peaked at #4 in 08.28.65 but *also* charted in 1990. 
+            Presently, each duplicate entry adds a new Song entry, which isn't ideal. 
+            There are likely many other such re-charts and duplication oddities to handle. 
+
     """
 
     chart = Chart.query.filter(Chart.chart_date == req_chart_date).first()
-
-    print(chart)
-
-    songs = (
-        Song
-        .query
-        .join(ChartAppearance, Song.id == ChartAppearance.song_id)
-        .filter(ChartAppearance.chart_date == req_chart_date)
-        .all()
-        )
 
     appearances = (
         ChartAppearance
         .query
         .join(Song, ChartAppearance.song_id == Song.id)
+        .filter(ChartAppearance.chart_date == req_chart_date)
+        .order_by(ChartAppearance.rank)
+        .all()
+        )
+
+    songs = (
+        Song
+        .query
+        .join(ChartAppearance, Song.id == ChartAppearance.song_id)
         .filter(ChartAppearance.chart_date == req_chart_date)
         .all()
         )
