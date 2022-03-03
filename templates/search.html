@@ -31,11 +31,12 @@
                 </div>
                 {% endfor %}
                 <div class="m-1">
-                    <button id="search" class="btn btn-small btn-primary justify-content-top" type="submit">Search</button>
-                    <button id="randomize" class="btn btn-small btn-secondary justify-content-top mx-1" formaction="/random">Random</button>
+                    <button id="search" class="btn btn-small btn-primary justify-content-top" type="submit" data-toggle="modal" data-target="#loadingModal">Search</button>
+                    <button id="randomize" class="btn btn-small btn-secondary justify-content-top mx-1" formaction="/random" data-toggle="modal" data-target="#loadingModal">Random</button>
                 </div>
             </form>
             </div>
         </div>
-    </div> 
+    </div>
+    
 {% endblock %}

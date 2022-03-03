@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="div container pt-5">
+  Search for {{artist}}:  
+  <img src="{{image_src}}" height="50px" wdith="50px">
+
+ <p>{{hyphen_artist}}</p>
+ <p>{{space_artist}}</p>
+ <p>{{formatted_url}}</p>
+ <p>{{image_src}}</p>
+
+  {% for song in songs%}
+  list: 
+    {{song.title}}:{{song.artist}}
+  {% endfor %}
+
+  <hr>
+
+  <h2>img </h2>
+  {{img}}
+
+
+  <h2>SRC </h2>
+  {{src}}
+  
+  <h2>SOUP</h2>
+  {{soup}}
+</div>
+{% endblock %}
+
+<!-- <div class="lrv-a-crop-1x1 u-width-288 u-width-245@mobile-max u-box-shadow-artist-info" style=""> 
+    <img alt="An image of Dolly Parton" 
+    class="c-lazy-image__img lrv-u-background-color-grey-lightest lrv-u-width-100p lrv-u-display-block lrv-u-height-auto" 
+    data-lazy-sizes="" 
+    data-lazy-src="https://charts-static.billboard.com/img/1840/12/dolly-parton-t20-180x180.jpg" 
+    data-lazy-srcset="" 
+    height="" 
+    src="https://www.billboard.com/wp-content/themes/vip/pmc-billboard-2021/assets/public/lazyload-fallback.gif" 
+    width=""/> 
+</div> -->

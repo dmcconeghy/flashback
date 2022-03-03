@@ -2,11 +2,12 @@ import os
 import re
 import billboard
 import random
+from bs4 import BeautifulSoup
 import requests
-
+import bs4
 
 import datetime
-from flask import Flask, render_template, redirect, session, flash, g, request
+from flask import Flask, render_template, redirect, session, flash, g, request, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
 from models import db, connect_db, User, Chart, Song, ChartAppearance
@@ -222,10 +223,51 @@ def random_chart():
     random_days_between = random.randrange((latest-earliest).days)
 
     random_date = earliest + datetime.timedelta(days=random_days_between) 
- 
+    
+    
     return redirect(f"/exists/{random_date}")
     
+################### LOADING ###################
+@app.route('/loading')
+def loading_screen():
+
+    return render_template('loading.html')
+
+@app.route('/test')
+def test_route():
+
+    return render_template('test.html')
+
+@app.route('/images/<string:artist>')
+def get_image(artist):
+
+    hyphen_artist = artist.replace('&20', '-')
+    space_artist = artist.replace('&20', ' ').capitalize()
+
+    formatted_url = f"http://billboard.com/artist/{hyphen_artist}"
+
+    def getdata(url):
+        r = requests.get(url)
+        return r.text
     
+    htmldata = getdata(formatted_url)
+    soup = BeautifulSoup(htmldata, 'html.parser')
+    
+    img = soup.find('img', alt=f"An image of {space_artist}")
+    print(img)
+    if img == None:
+        src = '/static/media/missing_album_art.svg'
+    else: 
+        src = img['data-lazy-src']
+
+        songs = Song.query.filter(Song.artist == space_artist).all()
+
+        for song in songs:
+            song.song_img_url = src
+            db.session.commit()
+
+    return render_template('images.html', hyphen_artist=hyphen_artist, formatted_url=formatted_url, image_src=src, artist=space_artist, songs=songs, soup=soup, img=img)
+
 ################### CHARTS ################### 
 @app.route('/charts', methods=['GET', 'POST'])
 def show_list_of_charts():

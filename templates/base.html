@@ -15,8 +15,9 @@
   
 </head>
 
-<header class="p-3 bg-dark text-white">
-  <div class="container">
+<header class="p-3 text-white bg-dark">
+  <div class="navbar navbar-expand-md navbar-dark ">
+  <div class="container ">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <a href="/" class="d-flex align-items-center fs-4 mb-2 mb-lg-0  text-decoration-none">
         <span class="text-warning">FLASH</span><span class="text-white">BACK</span>
@@ -51,6 +52,7 @@
         {% endif %}
     </div>
   </div>
+</div>
 </header>
 <body>
 
@@ -59,6 +61,7 @@
   {% endfor %}
 
   {% block content %}{% endblock %}
+  {% include 'loading.html' %} 
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

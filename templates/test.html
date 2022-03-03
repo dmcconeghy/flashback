@@ -3,10 +3,5 @@
 {% block title %}Songs{% endblock %}
 
 {% block content %}
-<div>
-    TEST: 
-    
-    <a href="/song/{{song.id}}">{{song.title}}</a> by {{song.artist}} appears on {{song.chart_date}} | </li>
-
-</div>
+{% include 'loading.html' %}
 {% endblock %}
