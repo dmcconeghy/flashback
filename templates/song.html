@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{song.title}}{% endblock %}
+{% block title %}{{song.title | truncate(20)}} by {% endblock %}
 
 {% block content %}
 <div class="div container pt-5">
@@ -14,7 +14,11 @@
    </ul>
    </p>
    <p>
-      <img src="{{song.song_img_url}}">
+      <img src="{{song.song_img_url}}" height="100px">
+      Artist Page: <a href="{{song.artist_page}}">{{song.artist_page}}</a>
+      <br>
+      Img URL: {{song.song_img_url}}
+ 
    </p>
 
 </div>

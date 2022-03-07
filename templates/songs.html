@@ -3,17 +3,48 @@
 {% block title %}Songs{% endblock %}
 
 {% block content %}
-<div class="div container pt-5">
+<div class="container-fluid ">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header text-center">
+				<h1>
+					Billboard Hits 
+				</h1>
+                <h4><small>Showing  <strong>{{ songs|length }}</strong> titles from the database.</small></h4>
+			</div>
 
-   <h4>There are currently <strong>{{ songs|length }}</strong> titles in the database.</h4>
-    
-    <ol>
-    {% for song in songs %}
-     
-        <li><a href="/song/{{song.id}}">{{song.title}}</a> by {{song.artist}} appears on {{song.chart_date}} | </li>
+            {% for song in songs %}
+          
+                
+                <div class="container justify-content-center">
+                    <div class="jumbotron col-lg-10 col-md-10 col-sm-12 mx-auto" >
+                        <div class="row justify-content-center">
+                            
+                            <div class="col-lg-5 col-md-5 col-sm-6 justify-content-sm-center">
+                                <img class="img-fluid" src="{{song.song_img_url}}" height="128px" width="128px"/>
+                            </div>
+                            <div class="col-lg-5 col-md-5 col-sm-6 ">
+                                <h2>
+                                    <a href="/song/{{song.id}}">{{song.title}}</a>
+                                </h2>
+                                <p>
+                                    {{song.title}} by {{song.artist}} appeared at #data on #data.
+                                </p>
+                                <p>
+                                    <a class="btn btn-primary btn-large" href="#">Learn more</a>
+                                </p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>    
+              
 
-    {% endfor %}
-    </ol>
-
+                    
+            {% endfor %}
+			
+		</div>
+	</div>
 </div>
+   
 {% endblock %}

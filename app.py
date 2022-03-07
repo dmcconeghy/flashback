@@ -1,13 +1,12 @@
 import os
-import re
 import billboard
 import random
 from bs4 import BeautifulSoup
 import requests
-import bs4
+
 
 import datetime
-from flask import Flask, render_template, redirect, session, flash, g, request, url_for
+from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import DateSearchForm, SignupForm, LoginForm
 from models import db, connect_db, User, Chart, Song, ChartAppearance
@@ -135,7 +134,7 @@ def chart_search(chart_date):
             if ChartAppearance.query.filter(and_(ChartAppearance.song_id == song_exists.id, ChartAppearance.chart_date == fetched_chart.date)).first():
                 new_song = Song(
                     title = entry.title, 
-                    artist = entry.artist
+                    artist = entry.artist,
                 )
 
                 db.session.add(new_song)
@@ -172,7 +171,7 @@ def chart_search(chart_date):
 
             new_song = Song(
                 title = entry.title, 
-                artist = entry.artist
+                artist = entry.artist,
             )
 
             db.session.add(new_song)
@@ -242,31 +241,53 @@ def test_route():
 def get_image(artist):
 
     hyphen_artist = artist.replace('&20', '-')
-    space_artist = artist.replace('&20', ' ').capitalize()
+    space_artist = artist.replace('&20', ' ').title()
 
     formatted_url = f"http://billboard.com/artist/{hyphen_artist}"
 
-    def getdata(url):
+    def get_data(url):
         r = requests.get(url)
-        return r.text
+        if r.status_code != 404:
+            return r.text
+        else:
+            return "Not Found"
     
-    htmldata = getdata(formatted_url)
-    soup = BeautifulSoup(htmldata, 'html.parser')
+    htmldata = get_data(formatted_url)
+
+    if htmldata != "Not Found":
+        soup = BeautifulSoup(htmldata, 'html.parser')
+        alt=f"An image of {space_artist}"
     
-    img = soup.find('img', alt=f"An image of {space_artist}")
-    print(img)
-    if img == None:
-        src = '/static/media/missing_album_art.svg'
-    else: 
-        src = img['data-lazy-src']
+        img_element = soup.find('img', alt=alt)
+    else:
+        soup = "Not Found"
+        alt=f"An image of {space_artist}"
+        img_element = None
+    
+    if img_element != None:
+       
+        image_src = img_element['data-lazy-src']
 
         songs = Song.query.filter(Song.artist == space_artist).all()
 
         for song in songs:
-            song.song_img_url = src
+            song.song_img_url = image_src
             db.session.commit()
+    else:
+        image_src = "def"
+        songs = Song.query.filter(Song.artist == space_artist).all()
 
-    return render_template('images.html', hyphen_artist=hyphen_artist, formatted_url=formatted_url, image_src=src, artist=space_artist, songs=songs, soup=soup, img=img)
+    return render_template('images.html',
+                            artist=artist, 
+                            hyphen_artist=hyphen_artist,
+                            space_artist=space_artist,
+                            formatted_url=formatted_url,
+                            img_element=img_element,
+                            alt=alt, 
+                            image_src=image_src,  
+                            songs=songs, 
+                            soup=soup, 
+                            )
 
 ################### CHARTS ################### 
 @app.route('/charts', methods=['GET', 'POST'])
@@ -318,27 +339,55 @@ def show_chart(req_chart_date):
 def show_list_of_songs():
     """ Returns a list of database stored songs from queried charts """
 
-    songs = Song.query.all()
+    songs = Song.query.order_by(Song.id).limit(20).all()
 
-    # todo: add appearances join query
-
+    for song in songs:
+        # Check if artist page has been searched for
+        if song.artist_page == "Not Queried":
+            
+            # Check if artist page search turned up empty
+            if song.find_artist_page() != False:
+                
+                # Search for an image
+                song.get_artist_image()
+        
     return render_template('songs.html', songs=songs)
 
 @app.route('/song/<int:song_id>')
 def show_song_details(song_id):
 
     song = Song.query.get_or_404(song_id)
+    
+    # Check if artist page has been searched for
+    if song.artist_page == "Not Queried":
+        
+        # Check if artist page search turned up empty
+        if song.find_artist_page() != False:
+            
+            # Search for an image
+            song.get_artist_image()
+                
 
+        
     appearances = ChartAppearance.query.filter(ChartAppearance.song_id == song_id).all()
-    print(f"BEHOLD", appearances[0].chart_date)
-
+    
     return render_template('song.html', song=song, appearances=appearances)
 
 @app.route('/songs/gallery')
 def show_song_gallery():
     """ Returns a scrollable gallery of songs. """
 
-    songs = Song.query.all()
+    songs = Song.query.limit(20).all()
+
+    for song in songs:
+        # Check if artist page has been searched for
+        if song.artist_page == "Not Queried":
+            
+            # Check if artist page search turned up empty
+            if song.find_artist_page() != False:
+                
+                # Search for an image
+                song.get_artist_image()
 
     return render_template('song_gallery.html', songs=songs)
 

@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container-fluid d-flex justify-content-center">
-<div class="col-lg-6 col-sm-10 pt-5">
+<div class="col-lg-3 col-sm-10 pt-5">
     <div id="carouselExampleControls" class="carousel slide " data-ride="carousel">
         <div class="carousel-inner text-center ">
             {% for song in songs %}
@@ -14,9 +14,9 @@
                 <div class="carousel-item active">
                     <div class="cards-wrapper">
                         <div class="card">
-                        <img src="../static/media/missing_album_art.svg" class="card-img-top" alt="..."  width="128px" height="128px">
+                        <img src="{{song.song_img_url}}" class="card-img-top" alt="..." >
                         <div class="card-body">
-                            <h5 class="card-title">{{song.title}}</h5>
+                            <h5 class="card-title"><a href="/song/{{song.id}}">{{song.title}}</a></h5>
                             <p class="card-text">{{song.artist}}</p>
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                         </div>
@@ -29,9 +29,9 @@
                 <div class="carousel-item">
                     <div class="cards-wrapper">
                         <div class="card">
-                            <img src="../static/media/missing_album_art.svg" class="card-img-top" alt="..." width="128px" height="128px">
+                            <img src="{{song.song_img_url}}" class="card-img-top" alt="..." >
                         <div class="card-body">
-                            <h5 class="card-title">{{song.title}}</h5>
+                            <h5 class="card-title"><a href="/song/{{song.id}}">{{song.title}}</a></h5>
                             <p class="card-text">{{song.artist}}</p>
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                         </div>
