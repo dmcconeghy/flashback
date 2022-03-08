@@ -6,43 +6,61 @@
 <div class="container-fluid ">
 	<div class="row">
 		<div class="col-md-12">
-			<div class="page-header text-center">
+			<div class="page-header text-center pb-3">
 				<h1>
 					Billboard Hits 
 				</h1>
-                <h4><small>Showing  <strong>{{ songs|length }}</strong> titles from the database.</small></h4>
+                <p><small>Returned {{songs.total }} songs from {{chart_total}} charts.</small></p>
 			</div>
 
-            {% for song in songs %}
-          
-                
-                <div class="container justify-content-center">
-                    <div class="jumbotron col-lg-10 col-md-10 col-sm-12 mx-auto" >
-                        <div class="row justify-content-center">
-                            
-                            <div class="col-lg-5 col-md-5 col-sm-6 justify-content-sm-center">
-                                <img class="img-fluid" src="{{song.song_img_url}}" height="128px" width="128px"/>
-                            </div>
-                            <div class="col-lg-5 col-md-5 col-sm-6 ">
-                                <h2>
-                                    <a href="/song/{{song.id}}">{{song.title}}</a>
-                                </h2>
-                                <p>
-                                    {{song.title}} by {{song.artist}} appeared at #data on #data.
-                                </p>
-                                <p>
-                                    <a class="btn btn-primary btn-large" href="#">Learn more</a>
-                                </p>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>    
-              
+        {% for song in songs.items %}
+            <div class="container">      
+                <div class="row">    
+                    <div class="d-flex">
+                       <img class="img-fluid" src="{{song.song_img_url}}" height="64px" width="64px"/>
+                           <span class="ml-5"><a href="/song/{{song.id}}">{{song.title}}</a>
+                            by {{song.artist}} </span>
+                        
+                    </div>      
+                </div>
+            </div>    
+        {% endfor %}
 
-                    
+        <!-- Pagination -->
+        <div class="text-center container pt-5">
+            <a href="/songs/{{ songs.prev_num }}" 
+                class="btn btn-outline-dark 
+                {% if songs.page == 1 %}disabled{% endif %}">
+                &laquo;
+            </a>
+
+        
+            {% for page_num in songs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if songs.page == page_num %}
+                        <a href="/songs/{{page_num}}"
+                        class="btn btn-dark">
+                            {{ page_num }}
+                        </a>
+                    {% else %}
+                        <a href="/songs/{{page_num}}"
+                        class="btn btn-outline-dark">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
             {% endfor %}
-			
+
+            <a href="/songs/{{ songs.next_num }}"
+            class="btn btn-outline-dark 
+            {% if songs.page == songs.pages %}disabled{% endif %}">
+                &raquo;
+            </a>
+
+           
+    
 		</div>
 	</div>
 </div>

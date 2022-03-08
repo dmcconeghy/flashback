@@ -6,10 +6,10 @@ import requests
 
 
 import datetime
-from flask import Flask, render_template, redirect, session, flash, g
+from flask import Flask, render_template, redirect, session, flash, g, request, url_for
 from flask_debugtoolbar import DebugToolbarExtension
-from forms import DateSearchForm, SignupForm, LoginForm
-from models import db, connect_db, User, Chart, Song, ChartAppearance
+from forms import DateSearchForm, SignupForm, LoginForm, NewSongForFavoriteList
+from models import db, connect_db, User, Chart, Song, ChartAppearance, Favorite
 from sqlalchemy import and_
 from werkzeug.exceptions import Unauthorized
 
@@ -105,7 +105,6 @@ def chart_exists(chart_date):
 
         return redirect(f"/search/{chart_date}")
         
-
 @app.route('/search/<string:chart_date>', methods=['GET', 'POST'])
 def chart_search(chart_date):
     """ 
@@ -292,11 +291,39 @@ def get_image(artist):
 ################### CHARTS ################### 
 @app.route('/charts', methods=['GET', 'POST'])
 def show_list_of_charts():
-    """ This route returns a list of database stored charts """
+    """ This route returns a list of database stored charts 
+    
+    
+    ChartAppearance.chart_date == chart.chart_date.isoformat()
 
-    charts = Chart.query.all()
+    ATM, this route's returns in /charts are 1) for the first chart only and 2) out of order 
+    """
 
-    return render_template('charts.html', charts=charts)
+    charts = Chart.query.order_by(Chart.chart_date.desc()).all()
+    songs_list = []
+    appearances_list = []
+    chart_list = []
+
+    for chart in charts:
+
+        song_ids = [s.song_id for s in chart.songs]
+        appearance_objects = [a for a in chart.songs]
+
+        song_objects = [Song.query.get(sid) for sid in song_ids]
+
+        chart_merge = zip(song_objects, appearance_objects)
+        chart_list.append(chart_merge)
+        # chart_list.append([song_objects, appearance_objects])
+        # song_objects = [Song
+                        # .query
+                        # .get(sid)
+                        # .join(ChartAppearance, Song.id == ChartAppearance.song_id)
+                        # .filter(ChartAppearance.chart_id == chart.chart_id).order_by(ChartAppearance.rank).all()
+                        # for sid in song_ids]
+
+    # print(chart_list)
+    # 
+    return render_template('charts.html', charts=charts, results=chart_list)
 
 @app.route('/chart/<string:req_chart_date>', methods=['GET', 'POST'])
 def show_chart(req_chart_date):
@@ -335,23 +362,32 @@ def show_chart(req_chart_date):
     return render_template('chart_results.html', chart=chart, results=zip(songs, appearances))
 
 ################### SONG/S ################### 
-@app.route('/songs')
-def show_list_of_songs():
+@app.route('/songs/')
+@app.route('/songs/<int:page>', methods=['GET', 'POST'])
+def show_list_of_songs(page=1):
     """ Returns a list of database stored songs from queried charts """
+    q = request.args.get('page')
 
-    songs = Song.query.order_by(Song.id).limit(20).all()
+    if q:
+        songs = Song.query.order_by(Song.id).paginate(page=q, per_page=10)
+    else:
+        songs = Song.query.order_by(Song.id).paginate(page=page, per_page=10)
+    
+    chart_total = Chart.query.count()
 
-    for song in songs:
-        # Check if artist page has been searched for
-        if song.artist_page == "Not Queried":
+    all_songs = Song.query.order_by(Song.id).all()
+
+    # for song in all_songs:
+    #     # Check if artist page has been searched for
+    #     if song.artist_page == "Not Queried":
             
-            # Check if artist page search turned up empty
-            if song.find_artist_page() != False:
+    #         # Check if artist page search turned up empty
+    #         if song.find_artist_page() != False:
                 
-                # Search for an image
-                song.get_artist_image()
+    #             # Search for an image
+    #             song.get_artist_image()
         
-    return render_template('songs.html', songs=songs)
+    return render_template('songs.html', songs=songs, chart_total=chart_total)
 
 @app.route('/song/<int:song_id>')
 def show_song_details(song_id):
@@ -418,6 +454,22 @@ def listing():
     songs = Song.query.limit(20).all()
 
     return render_template('listing.html', songs=songs)
+
+################### FAVORITES ###################
+
+@app.route("/favorites/")
+def show_favorites():
+
+    form = NewSongForFavoriteList()
+
+    songs = Song.query.all()
+
+    # favorites = Favorite.query.get(user_id).all()
+    
+    form.song.choices(songs)
+
+    return render_template('user_page.html', form=form, favorites=songs)
+
 ################### SIGNUP ###################
 
 @app.route('/signup', methods=['GET', 'POST'])

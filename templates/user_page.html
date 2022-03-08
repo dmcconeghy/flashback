@@ -7,4 +7,24 @@
     <h2>Hello {{ user.username }}</h2>
     <img src="{{user.profile_img_url}}" width="50" height="50">
 </div>
+
+<h1>Add a song to your favorites</h1>
+{% if favorites %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    {% for field in form if field.widget.input_type != 'hidden'%}
+    <div class="form-group">
+      {{field.label}}
+      {{field(class_="form-control")}}
+      {% for err in field.errors %}
+      <small class="form-text text-danger">
+        {{err}}
+      </small>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <button class="btn  btn-success  btn-lg">Submit</button>
+  </form>
+{% endif %}
 {% endblock %}

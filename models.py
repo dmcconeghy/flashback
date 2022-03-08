@@ -18,17 +18,17 @@ class Song(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    # Billboard data as given from API calls
+    # Billboard data as given from API calls to billboard.py
     # ChartData is fetched using ChartData(name, date=None, year=None, fetch=True, timeout=25)
-    # ChartData's ChartEntry instance then includes:
-    # Presently, songs appear for EACH weekly billboard chart appearance. 
-
+    
     title = db.Column(db.Text, nullable=False)
     artist = db.Column(db.Text, nullable=False)
     song_img_url = db.Column(db.Text, default='../static/media/missing_album_art.svg')
     artist_page = db.Column(db.Text, default="Not Queried")
     missing_image = db.Column(db.Boolean, default=None)
     missing_page = db.Column(db.Boolean, default=None)
+
+    charts = db.relationship('ChartAppearance')
 
     def has_image(self):
 
@@ -84,21 +84,6 @@ class Song(db.Model):
                 return print("Artist Image Not Found")
         db.session.commit()
 
-    # appearance = db.relationship('ChartAppearance')
-
-#     # iTunes data / Spotify data
-#     # see iTunes_Sample.json
-#     # The items sync the Billboard data with iTunes. 
-#     # This simplifies futher calls by skipping the search endpoint.
-#     # Spotify calls are rate-limited but their data is much more expansive.
-
-#     iTunes_artist_id = db.Column(db.Integer)
-#     iTunes_collection_id = db.Column(db.Integer)
-#     iTunes_track_id = db.Column(db.Integer) 
-#     album = db.Column(db.text)
-#     release_date = db.Column(db.DateTime)
-#     genre = db.Column(db.text)
-
 class ChartAppearance(db.Model):
     """ 
     
@@ -137,8 +122,7 @@ class Chart(db.Model):
     name = db.Column(db.String, nullable=False)
     chart_date = db.Column(db.Date, nullable=False, unique=True)
 
-    # appearance = db.relationship('ChartAppearance')
-
+    songs = db.relationship('ChartAppearance')
 
     @classmethod
     def next_chart(cls, get_date):
@@ -220,14 +204,15 @@ class User(db.Model):
 
         return False
 
-# class Favorite(db.Model):
-#     """User favorites"""
+class Favorite(db.Model):
+    """User favorites"""
 
-#     __tablename__= 'favorites'
+    __tablename__= 'favorites'
 
-#     id = db.Column(db.Integer, autoincrement=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), primary_key=True)
-#     song_id = db.Column(db.Integer, db.ForeignKey('songs.id'), primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), primary_key=True)
+    song_id = db.Column(db.Integer, db.ForeignKey('songs.id'), primary_key=True)
+
 
 def connect_db(app):
 

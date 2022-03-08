@@ -59,3 +59,43 @@
 
     # datetime_date = convert_to_datetime(chart_date)
     # valid_date = validate_date(datetime_date)
+
+    # for chart in charts:
+
+    #     appearances = (
+    #         ChartAppearance
+    #         .query
+    #         .join(Song, ChartAppearance.song_id == Song.id)
+    #         .filter(ChartAppearance.chart_date == chart.chart_date.isoformat())
+    #         .order_by(ChartAppearance.rank)  
+    #         .all()
+    #         )
+
+    #     songs = (
+    #         Song
+    #         .query
+    #         .join(ChartAppearance, Song.id == ChartAppearance.song_id)
+    #         .filter(ChartAppearance.chart_date == chart.chart_date.isoformat())
+    #         .limit(10)
+    #         .all()
+    #         )
+    # results=zip(appearances, songs)
+
+    # songs = (Chart
+    #             .query
+    #             .join(ChartAppearance, ChartAppearance.chart_id == Chart.id)
+    #             .join(Song, ChartAppearance.song_id == Song.id)
+    #             .filter(ChartAppearance.rank == 1)
+    #             .order_by(ChartAppearance.chart_date.desc())
+    #             .value(Song.title, Song.artist)
+    #             .all()
+    #         )
+        
+    # songs = (Song
+    #         .query
+    #         .join(ChartAppearance, Song.id == ChartAppearance.song_id)
+    #         .join(Chart, ChartAppearance.chart_id == Chart.id)
+    #         .filter(ChartAppearance.rank == 1)
+    #         .order_by(ChartAppearance.chart_date.desc())
+    #         .all())
+    # results = zip(songs, charts)

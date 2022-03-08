@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField, StringField, PasswordField, EmailField
+from wtforms import DateField, StringField, PasswordField, EmailField, SelectField
 from wtforms.validators import DataRequired, Email, Length, URL, Optional 
 
 class DateSearchForm(FlaskForm):
@@ -21,4 +21,8 @@ class LoginForm(FlaskForm):
 
     username = StringField("username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[Length(min=6)])
-    
+
+class NewSongForFavoriteList(FlaskForm):
+    """ Form for adding songs to favorites """
+
+    song = SelectField('Song to Add', coerce=int)
