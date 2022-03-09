@@ -6,68 +6,64 @@
 
 <div class="container-fluid pt-5 text-center">
 
-    <h1>Billboard's Hot 100</h1>
+    <h2>Billboard's Hot 100</h2>
     <hr>
 </div>
 
-<div class="container col-md-6">
-    <div class="container pt-5 ">
-	<div class="row">
-		<div class="col">
-            <h6>Chart Date</h6>
-        </div>
-        <div class="col">
-            <h6>Previous Chart</h6>
-        </div>
-        <div class="col">
-            <h6>Next Chart</h6>
-        </div>
-    </div>
+<div class="container col col-md-10 col-xl-8">
+    
+	
         {% for chart in charts %}
     
-                <div class="row">
-                    
-                    <div class="col">
-                         <a href="/chart/{{ chart.chart_date }}">{{chart.chart_date.month}}/{{chart.chart_date.day}}/{{chart.chart_date.year}}</a>
-                    </div>
-                    <div class="col">
-                        
-                        <p>
-                            <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.prior_chart(chart.chart_date)}}">
-                                {{chart.prior_chart(chart.chart_date)}}
-                            </a></span>
-                        </p>
-           
-                    </div>
-
-                    <div class="col">
-                        <p>
-                            <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.next_chart(chart.chart_date)}}">
-                                {{chart.next_chart(chart.chart_date)}}
-                            </a></span>
-                        </p> 
-                    </div>
+            <div class="row text-center col-md-10 col-lg-10">
+                <div class="col col-md-3">
+                    <p>
+                        <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.next_chart(chart.chart_date)}}">
+                            <<
+                        </a></span>
+                    </p> 
                 </div>
-           
+                <div class="col-7 col-md-6 h4">
+                        <a href="/chart/{{ chart.chart_date }}">{{chart.chart_date}}</a>
+                </div>
+                <div class="col col-md-3">
+                    
+                    <p>
+                        <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.prior_chart(chart.chart_date)}}">
+                            >>
+                        </a></span>
+                    </p>
+        
+                </div>
 
-            <div class="row ">
-                <div class="container-fluid">
+                
+            </div>
+        
+            <div class="row col-md-10 col-lg-10">
+                <div class="container-fluid col-lg-8 ">
                 {% for song, appearance in results[loop.index0] %}
                     {% if loop.index0 < 5 %}
-                    <div class="row col-md-12">
-                        <span>
-                            #{{appearance.rank}} -                                                        
-                            {{song.title | truncate(30)}} by {{song.artist | truncate(30)}}
-                            
-                            <p>
-                                Date: {{appearance.chart_date}}
-                            Peak: {{appearance.peak_pos}}
-                            Last: {{appearance.last_pos}}                           
-                            New: {{appearance.isNew}}
-                        </p>
-                            
-                        </span>
-                        
+                    <div class="row">
+                        <div class="col-3 col-md-2 col-lg-3 col-xl-3">
+                            <img src="{{song.song_img_url}}" height="auto" class="img-fluid mx-auto d-block p-1">
+                        </div>
+                        <div class="col-7 col-md-7">
+                            <div class="row h5">
+                                #{{appearance.rank}} - <a href="/song/{{song.id}}">{{song.title | truncate(20)}}</a> 
+                            </div>
+                            <div class="row">
+                                <small>
+                                    {{song.artist | truncate(25)}} -- 
+
+                                    {% if appearance.last_pos == 0 %}
+                                    Chart Debut!
+                                    {% else %}
+
+                                    Last Week #{{appearance.last_pos}}
+                                    {%endif%}     
+                                </small>
+                            </div>                         
+                        </div>
                     </div>
                     {% endif %}
                     {% if loop.last %}
@@ -79,13 +75,8 @@
             **********************
             
                     
-        {% endfor%}
-          
-        
-        
-        
-        
-    </div>
+        {% endfor%}       
+    
 </div>
 
 

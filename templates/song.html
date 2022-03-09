@@ -3,23 +3,67 @@
 {% block title %}{{song.title | truncate(20)}} by {% endblock %}
 
 {% block content %}
-<div class="div container pt-5">
-    
-   <p>Title:  {{song.title}}</p>
-   <p>Artist:  {{song.artist}}</p>
-   <p>Appears on: 
-      <ul>{% for appearance in appearances %}
-      <li><a href="/chart/{{appearance.chart_date}}">{{appearance.chart_date}}</a></li>
-      {% endfor %}
-   </ul>
-   </p>
-   <p>
-      <img src="{{song.song_img_url}}" height="100px">
-      Artist Page: <a href="{{song.artist_page}}">{{song.artist_page}}</a>
-      <br>
-      Img URL: {{song.song_img_url}}
- 
-   </p>
+<div class="container-fluid pt-5">
+   <div class="row col-12 col-sm-12 col-md-12 col-lg-10 ">
+      <div class="col-4 col-sm-6 col-md-5 col-lg-3 ">
+         
+         <a href="{{song.artist_page}}">
+            <img src="{{song.song_img_url}}" 
+            height="auto" 
+            class="rounded img-fluid mx-auto d-block ">
+         </a>
+         <!-- col-sm-12 col-md-8 col-md-10 col-lg-10  -->
+         <p class="text-center ">
+            <small>
+               <a href="{{song.artist_page}}">
+                  More at Billboard.com
+               </a>
+            </small>
+         </p>
+      </div>
+      <div class="col-8 col-sm-6 col-md-7 col-lg-9 float-left">
+         <p class="h2">{{song.title}}</p>
+         <p class="h5">{{song.artist}}</p>
+         {% for appearance in appearances %}
+            {% if loop.first %}            
+               <p class="h6">A #{{appearance.peak_pos}} hit!</P>
+            {% endif %}
+         {% endfor %}
 
+         
+      </div>
+   </div>
+   <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-10 pt-3"> 
+      <div class= "col-sm-4 col-md-5 col-lg-3 ">
+      </div>
+      <div class="h3 col text-center">
+         Chart History
+      </div>
+   </div>
+   <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-10 pt-3"> 
+      <div class="col-sm-4 col-md-5 col-lg-3 ">  
+      </div>
+      <div class="col-8 col-sm-6 col-md-7 col-lg-9 float-left pt-2 text-left pl-1-md col mx-auto text-center">
+         <div class="row">
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">Date</div>
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">Rank</div>
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">Last Week</div>
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">Weeks</div>
+         </div>
+         {% for appearance in appearances %}
+         <div class="row">
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">
+               <a href="/chart/{{appearance.chart_date}}">
+               {{appearance.chart_date}}
+               </a>
+            </div>
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">{{appearance.rank}}</div>
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">{{appearance.last_pos}}</div>
+            <div class="col-2 col-sm-4 col-md-5 col-lg-3">{{appearance.weeks}}</div>
+               
+         </div>
+         {% endfor %}
+      </div>
+   </div>
 </div>
 {% endblock %}

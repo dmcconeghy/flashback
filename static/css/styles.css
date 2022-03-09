@@ -2,6 +2,10 @@ html {
     background-color: azure;
 }
 
+.text-responsive {
+  font-size: calc(100% + 1vw + 1vh);
+}
+
 .loader {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */
