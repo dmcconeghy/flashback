@@ -1,17 +1,20 @@
+from ctypes import util
 import os
-import billboard
-import random
-from bs4 import BeautifulSoup
 import requests
 
-
-import datetime
-from flask import Flask, render_template, redirect, session, flash, g, request, url_for
+from flask import Flask, render_template, redirect, session, flash, g 
 from flask_debugtoolbar import DebugToolbarExtension
-from forms import DateSearchForm, SignupForm, LoginForm, NewSongForFavoriteList
-from models import db, connect_db, User, Chart, Song, ChartAppearance, Favorite
-from sqlalchemy import and_
+
+
 from werkzeug.exceptions import Unauthorized
+
+from models import db, connect_db, User, Song, Favorite
+from forms import SignupForm, LoginForm, NewSongForFavoriteList
+import chart
+import song
+import search
+import utilities
+
 
 CURR_USER_KEY = 'current_user'
 CURR_CHART = 'current_date'
@@ -59,418 +62,8 @@ def do_logout():
     if CURR_USER_KEY in session:
         # session.pop(CURR_USER_KEY, None)
         del session[CURR_USER_KEY]
-        
-################### ROOT ###################    
 
-@app.route('/', methods=['GET', 'POST'])
-def root():
-    """ Returns the root / index homepage"""
-
-    return render_template('index.html')
-
-################### ABOUT ###################    
-
-@app.route('/about')
-def about():
-    """ Returns the about page"""
-
-    return render_template('about.html')
-
-################### SEARCH ###################
-@app.route('/exists/<string:chart_date>', methods=['GET'])
-def chart_exists(chart_date):
-
-    def previously_fetched(date_to_be_checked):
-        """ 
-            Does our chart date exist already? 
-            Yes? Return db version.
-            No? Fetch it. 
-        """
-        
-        found_chart = (Chart
-                    .query
-                    .filter(Chart.chart_date == date_to_be_checked)
-                    .all()) 
-
-        if found_chart:
-            return True
-        else:
-            return False
-
-    if previously_fetched(chart_date):
-        flash('Chart found', 'success')
-        return redirect(f"/chart/{chart_date}")
-        
-    else:
-
-        return redirect(f"/search/{chart_date}")
-        
-@app.route('/search/<string:chart_date>', methods=['GET', 'POST'])
-def chart_search(chart_date):
-    """ 
-    Creates a chart entry and populates the db with songs and appearance data.
-    """
-
-    fetched_chart = billboard.ChartData('hot-100', date=chart_date)
-
-    new_chart = Chart(
-        name=fetched_chart.name,
-        chart_date=fetched_chart.date
-        # consider fetching chartData for entries?
-    )
-
-    db.session.add(new_chart)
-    db.session.commit()
-
-    for entry in fetched_chart:
-
-        # Check if it is in our db already
-        song_exists = Song.query.filter(and_(Song.title == entry.title, Song.artist == entry.artist)).first()
-        
-        if song_exists != [] and song_exists != None:
-            
-            # Check that the appearance data is different (e.g, 1990-11-11 Unchained Meloday appears twice)
-            if ChartAppearance.query.filter(and_(ChartAppearance.song_id == song_exists.id, ChartAppearance.chart_date == fetched_chart.date)).first():
-                new_song = Song(
-                    title = entry.title, 
-                    artist = entry.artist,
-                )
-
-                db.session.add(new_song)
-                db.session.commit()
-
-                new_appearance = ChartAppearance(
-                    chart_id = new_chart.id,
-                    song_id = new_song.id,
-                    peak_pos = entry.peakPos,
-                    last_pos = entry.lastPos,
-                    weeks = entry.weeks,
-                    rank = entry.rank,
-                    isNew = entry.isNew,
-                    chart_date = new_chart.chart_date
-                )
-
-            else: 
-                new_appearance = ChartAppearance(
-                    chart_id = new_chart.id,
-                    song_id = song_exists.id,
-                    peak_pos = entry.peakPos,
-                    last_pos = entry.lastPos,
-                    weeks = entry.weeks,
-                    rank = entry.rank,
-                    isNew = entry.isNew,
-                    chart_date = new_chart.chart_date
-                )
-
-                db.session.add(new_appearance)
-                db.session.commit()
-
-        else:
-            
-
-            new_song = Song(
-                title = entry.title, 
-                artist = entry.artist,
-            )
-
-            db.session.add(new_song)
-            db.session.commit()
-
-            new_appearance = ChartAppearance(
-                chart_id = new_chart.id,
-                song_id = new_song.id,
-                peak_pos = entry.peakPos,
-                last_pos = entry.lastPos,
-                weeks = entry.weeks,
-                rank = entry.rank,
-                isNew = entry.isNew,
-                chart_date = new_chart.chart_date
-            )
-
-            db.session.add(new_appearance)
-            db.session.commit()
-    
-
-    return redirect(f"/chart/{fetched_chart.date}")
-
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-    """ 
-        Handles user-selected date requests.
-        Passes dates to chart_search
-
-        todo: handle date range validation
-
-    """
-
-    form = DateSearchForm()
-
-    if form.validate_on_submit():
-        inputted_date = form.date.data
-        
-        return redirect(f"/exists/{inputted_date}")
-        
-    return render_template("search.html", form=form)
-
-@app.route('/random', methods=['GET', 'POST'])
-def random_chart():
-
-    earliest = datetime.date(1958, 8, 4)
-    latest = datetime.date.today()
-    
-    random_days_between = random.randrange((latest-earliest).days)
-
-    random_date = earliest + datetime.timedelta(days=random_days_between) 
-    
-    
-    return redirect(f"/exists/{random_date}")
-    
-################### LOADING ###################
-@app.route('/loading')
-def loading_screen():
-
-    return render_template('loading.html')
-
-@app.route('/test')
-def test_route():
-
-    return render_template('test.html')
-
-@app.route('/images/<string:artist>')
-def get_image(artist):
-
-    hyphen_artist = artist.replace('&20', '-')
-    space_artist = artist.replace('&20', ' ').title()
-
-    formatted_url = f"http://billboard.com/artist/{hyphen_artist}"
-
-    def get_data(url):
-        r = requests.get(url)
-        if r.status_code != 404:
-            return r.text
-        else:
-            return "Not Found"
-    
-    htmldata = get_data(formatted_url)
-
-    if htmldata != "Not Found":
-        soup = BeautifulSoup(htmldata, 'html.parser')
-        alt=f"An image of {space_artist}"
-    
-        img_element = soup.find('img', alt=alt)
-    else:
-        soup = "Not Found"
-        alt=f"An image of {space_artist}"
-        img_element = None
-    
-    if img_element != None:
-       
-        image_src = img_element['data-lazy-src']
-
-        songs = Song.query.filter(Song.artist == space_artist).all()
-
-        for song in songs:
-            song.song_img_url = image_src
-            db.session.commit()
-    else:
-        image_src = "def"
-        songs = Song.query.filter(Song.artist == space_artist).all()
-
-    return render_template('images.html',
-                            artist=artist, 
-                            hyphen_artist=hyphen_artist,
-                            space_artist=space_artist,
-                            formatted_url=formatted_url,
-                            img_element=img_element,
-                            alt=alt, 
-                            image_src=image_src,  
-                            songs=songs, 
-                            soup=soup, 
-                            )
-
-################### CHARTS ################### 
-@app.route('/charts', methods=['GET', 'POST'])
-def show_list_of_charts():
-    """ This route returns a list of database stored charts 
-    
-    
-    ChartAppearance.chart_date == chart.chart_date.isoformat()
-
-    ATM, this route's returns in /charts are 1) for the first chart only and 2) out of order 
-    """
-
-    charts = Chart.query.order_by(Chart.chart_date.desc()).all()
-    songs_list = []
-    appearances_list = []
-    chart_list = []
-
-    for chart in charts:
-
-        song_ids = [s.song_id for s in chart.songs]
-        appearance_objects = [a for a in chart.songs]
-
-        song_objects = [Song.query.get(sid) for sid in song_ids]
-
-        chart_merge = zip(song_objects, appearance_objects)
-        chart_list.append(chart_merge)
-        # chart_list.append([song_objects, appearance_objects])
-        # song_objects = [Song
-                        # .query
-                        # .get(sid)
-                        # .join(ChartAppearance, Song.id == ChartAppearance.song_id)
-                        # .filter(ChartAppearance.chart_id == chart.chart_id).order_by(ChartAppearance.rank).all()
-                        # for sid in song_ids]
-
-    # print(chart_list)
-    # 
-    return render_template('charts.html', charts=charts, results=chart_list)
-
-@app.route('/chart/<string:req_chart_date>', methods=['GET', 'POST'])
-def show_chart(req_chart_date):
-    """ 
-        Display a specific chart and its songs
-
-        This route must occur AFTER validation through exists.
-
-        todo: fix issues with duplicate entries cf. "Unchained Melody" from 10.06.90 - 3.23.91
-            There are two version on this chart but they're indistinguishable in single API data calls.
-            The original peaked at #4 in 08.28.65 but *also* charted in 1990. 
-            Presently, each duplicate entry adds a new Song entry, which isn't ideal. 
-            There are likely many other such re-charts and duplication oddities to handle. 
-
-    """
-
-    chart = Chart.query.filter(Chart.chart_date == req_chart_date).first()
-
-    appearances = (
-        ChartAppearance
-        .query
-        .join(Song, ChartAppearance.song_id == Song.id)
-        .filter(ChartAppearance.chart_date == req_chart_date)
-        .order_by(ChartAppearance.rank)
-        .all()
-        )
-
-    songs = (
-        Song
-        .query
-        .join(ChartAppearance, Song.id == ChartAppearance.song_id)
-        .filter(ChartAppearance.chart_date == req_chart_date)
-        .all()
-        )
-
-    return render_template('chart_results.html', chart=chart, results=zip(songs, appearances))
-
-################### SONG/S ################### 
-@app.route('/songs/')
-@app.route('/songs/<int:page>', methods=['GET', 'POST'])
-def show_list_of_songs(page=1):
-    """ Returns a list of database stored songs from queried charts """
-    q = request.args.get('page')
-
-    if q:
-        songs = Song.query.order_by(Song.id).paginate(page=q, per_page=10)
-    else:
-        songs = Song.query.order_by(Song.id).paginate(page=page, per_page=10)
-    
-    chart_total = Chart.query.count()
-
-    all_songs = Song.query.order_by(Song.id).all()
-
-    # for song in all_songs:
-    #     # Check if artist page has been searched for
-    #     if song.artist_page == "Not Queried":
-            
-    #         # Check if artist page search turned up empty
-    #         if song.find_artist_page() != False:
-                
-    #             # Search for an image
-    #             song.get_artist_image()
-        
-    return render_template('songs.html', songs=songs, chart_total=chart_total)
-
-@app.route('/song/<int:song_id>')
-def show_song_details(song_id):
-
-    song = Song.query.get_or_404(song_id)
-    
-    # Check if artist page has been searched for
-    if song.artist_page == "Not Queried":
-        
-        # Check if artist page search turned up empty
-        if song.find_artist_page() != False:
-            
-            # Search for an image
-            song.get_artist_image()
-                
-
-        
-    appearances = ChartAppearance.query.filter(ChartAppearance.song_id == song_id).all()
-    
-    return render_template('song.html', song=song, appearances=appearances)
-
-@app.route('/songs/gallery')
-def show_song_gallery():
-    """ Returns a scrollable gallery of songs. """
-
-    songs = Song.query.limit(20).all()
-
-    for song in songs:
-        # Check if artist page has been searched for
-        if song.artist_page == "Not Queried":
-            
-            # Check if artist page search turned up empty
-            if song.find_artist_page() != False:
-                
-                # Search for an image
-                song.get_artist_image()
-
-    return render_template('song_gallery.html', songs=songs)
-
-@app.route('/song/art/<int:song_id>', methods=['GET', 'POST'])
-def fetch_song_art(song_id):
-    """ 
-        Fetches a specific song's album art using the iTunes API.
-        This FAILS because requests executes BEFORE Song.query returns a result.  
-    
-    """
-    song = Song.query.get_or_404(song_id)
-
-    artist = song.artist
-    title = song.title
-
-    a = artist.replace(' ', '+')
-
-    t = title.replace(' ', '+')
-
-
-    r = requests.get('https://itunes.apple.com/search?term={{a}}&entity=musicArtist&limit=5').json()
-
-    return render_template('fetch_art.html', song=song, a=a, r=r)
-
-@app.route('/listing')
-def listing():
-
-    songs = Song.query.limit(20).all()
-
-    return render_template('listing.html', songs=songs)
-
-################### FAVORITES ###################
-
-@app.route("/favorites/")
-def show_favorites():
-
-    form = NewSongForFavoriteList()
-
-    songs = Song.query.all()
-
-    # favorites = Favorite.query.get(user_id).all()
-    
-    form.song.choices(songs)
-
-    return render_template('user_page.html', form=form, favorites=songs)
-
-################### SIGNUP ###################
+################### USER SIGNUP ###################
 
 @app.route('/signup', methods=['GET', 'POST'])
 def user_signup():
@@ -506,7 +99,7 @@ def user_signup():
 
         return render_template("signup.html", form=form)
 
-################### USER ###################
+################### USER PROFILE PAGE ###################
 
 @app.route('/users/<int:user_id>')
 def show_user_page(user_id):
@@ -520,7 +113,7 @@ def show_user_page(user_id):
 
     return render_template("user_page.html", user=user)
 
-################### LOGIN ###################
+################### USER LOGIN ###################
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -540,7 +133,7 @@ def login():
 
     return render_template('login.html', form=form)
 
-################### LOGOUT ###################
+################### USER LOGOUT ###################
 
 @app.route('/logout')
 def logout():
@@ -551,6 +144,78 @@ def logout():
     
     return redirect("/login")
 
+################### CHARTS ################### 
+#
+#   See charts.py for:
+# 
+#   def show_chart(req_chart_date) for a specific date's chart
+#   def show_list_of_charts() for all charts in the database   
+#
+app.add_url_rule('/charts', view_func=chart.show_list_of_charts, methods=['GET', 'POST'])
+app.add_url_rule('/chart/<string:req_chart_date>', view_func=chart.show_chart, methods=['GET', 'POST'])
+
+################### SONG/S ################### 
+#
+#   See song.py for
+#  
+#   def show_list_of_songs(page=1) for a paginated list of songs in the database
+#   def show_song_details(song_id) for a detailed song page
+#   def show_song_gallery() for a gallery version of a selection of songs in the database
+#   def fetch_song_art(song_id) for querying a song's art. Should be admin-only. 
+#   def listing() for a jukebox style version of chart information
+# 
+app.add_url_rule('/songs', view_func=song.show_list_of_songs, methods=['GET', 'POST'])
+app.add_url_rule('/songs/<int:page>', view_func=song.show_list_of_songs, methods=['GET', 'POST'])
+app.add_url_rule('/song/<int:song_id>', view_func=song.show_song_details)
+app.add_url_rule('/songs/gallery', view_func=song.show_song_gallery)
+app.add_url_rule('/song/art/<int:song_id>', view_func=song.fetch_song_art, methods=['GET', 'POST'])
+app.add_url_rule('/listing', view_func=song.listing)
+
+################### SEARCH ###################
+# 
+#   See search.py for
+# 
+#   def chart_exists(chart_date) a helper route to prevent uncessessary API calls.
+#   def chart_search(chart_date) the interface between the API and database inputs
+#   def search() the request page for a specific or random chart.
+#   def random_chart() returns a random chart date.
+# 
+app.add_url_rule('/exists/<string:chart_date>', view_func=search.chart_exists)
+app.add_url_rule('/search/<string:chart_date>', view_func=search.chart_search, methods=['GET', 'POST'])
+app.add_url_rule('/search', view_func=search.search, methods=['GET', 'POST'])
+app.add_url_rule('/random', view_func=search.random_chart, methods=['GET', 'POST'])
+
+################### UTILITIES ###################
+# 
+#   See utilities.py for
+#   
+#   def root() returns the project's root / homepage 
+#   def about() returns the about this project page
+#   def loading_screen() supplies a loading modal for timed queries
+#   def test_route() exists for temporary feature testing
+#   def get_image(artist) is a route to test image scraping
+#   
+app.add_url_rule('/', view_func=utilities.root, methods=['GET', 'POST'])
+app.add_url_rule('/about', view_func=utilities.about)
+app.add_url_rule('/loading', view_func=utilities.loading_screen)
+app.add_url_rule('/test', view_func=utilities.test_route)
+app.add_url_rule('/images/<string:artist>', view_func=utilities.get_image, methods=['GET', 'POST'])
+
+################### USER FAVORITES ###################
+
+@app.route("/favorites/")
+def show_favorites():
+
+    form = NewSongForFavoriteList()
+
+    songs = Song.query.all()
+
+    # favorites = Favorite.query.get(user_id).all()
+    
+    form.song.choices(songs)
+
+    return render_template('user_page.html', form=form, favorites=songs)
+
 ################### ERROR ###################
 
 @app.errorhandler(404)
@@ -558,6 +223,30 @@ def page_not_found(e):
     """404 NOT FOUND page."""
 
     return render_template('404.html'), 404
+
+# @app.after_request
+# def response_trigger(response):
+
+#     """
+#         Runs after giving a response to fetch additional image urls. 
+#     """
+#     @response.call_on_close
+#     def process_after():
+#         songs = Song.query.filter(Song.missing_page != True).limit(2)
+
+#         for song in songs:
+#             # Check if artist page has been searched for
+#             if song.artist_page == "Not Queried":
+            
+#                 # Check if artist page search turned up empty
+#                 if song.find_artist_page() != False:
+                
+#                     # Search for an image
+#                     song.get_artist_image()
+#                     print("fetched a song image")
+        
+#         pass
+#     return response
 
 ################### AFTER (Caching) ###################
 @app.after_request

@@ -54,6 +54,8 @@ class Song(db.Model):
         
         else: 
             print("Artist Page doesn't exist")
+            self.missing_page = True
+            db.session.commit()
             return False
 
     def get_artist_image(self):
