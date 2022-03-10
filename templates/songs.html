@@ -12,14 +12,29 @@
 				</h1>
                 <p><small>Returned {{songs.total }} songs from {{chart_total}} charts.</small></p>
 			</div>
-
+    
         {% for song in songs.items %}
             <div class="container">      
-                <div class="row">    
+                <div class="row ">    
                     <div class="d-flex">
                        <img class="img-fluid" src="{{song.song_img_url}}" height="64px" width="64px"/>
-                           <span class="ml-5"><a href="/song/{{song.id}}">{{song.title}}</a>
-                            by {{song.artist}} </span>
+                           <span class="ml-5 ">
+                               <a href="/song/{{song.id}}">{{song.title}}</a>
+                            by {{song.artist}}
+                             <form method="POST" 
+                                action="/songs/{{songs.page}}/favorite/{{song.id}}" 
+                                class="float-right" 
+                                name="favorite-form">
+                                <button 
+                                    class="btn p-0 ml-1" 
+                                    type="submit"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="top" 
+                                    title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
+                                    <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
+                                 </button>
+                             </form>
+                        </span>
                         
                     </div>      
                 </div>
@@ -35,7 +50,7 @@
             </a>
 
         
-            {% for page_num in songs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+    {% for page_num in songs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}        
                 {% if page_num %}
                     {% if songs.page == page_num %}
                         <a href="/songs/{{page_num}}"

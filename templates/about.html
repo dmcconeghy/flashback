@@ -3,47 +3,42 @@
 {% block title %}About{% endblock %}
 
 {% block content %}
-<div class="div container pt-5">
+<div class="container  pt-5">
     
-  
-  <div class="row">
-    <div class="col-xs-2 col-lg-2">
-    </div>
-    <div class="col-xs-8 col-lg-8 text-center">
+    <div class="col-12 col-lg-8 col-xl-10 mx-auto text-center">
         <h1>ABOUT FLASHBACK</h1>
-     
-        <div class="text-justify pt-5">
-            <img src="../static/media/dmcconeghy.jpg" class="rounded float-right img-fluid p-1 ml-3 mb-1 col-sm-3 " alt="Profile shot of Dave McConeghy">
+            
+        <div class="text-left pt-5">
+            <a href="https://www.linkedin.com/in/david-mcconeghy/"><img class="rounded float-right img-fluid p-1 ml-3 mb-1 col-5 col-sm-3 col-xl-2" src="../static/media/dmcconeghy.jpg"  alt="Profile shot of Dave McConeghy"></a>
+
             
             <p>I'm <a href="https://www.linkedin.com/in/david-mcconeghy/">Dave McConeghy</a> and Flashback is a musical memory project I completed for my full-stack software engineering bootcamp. 
                 You'll appreciate this project if you've ever had a moment where you heard a song and thought, "I remember when I first heard that!"</p>
             <p>That's what happened to me when I happened to hear Nirvana's "All Apologies" a while back. I thought, "I remember when that came out. It was 1993 and Cobain killed himself just a few months later."
-                It was such a strong memory, but I couldn't think of what else I was listening to then.</p> 
+                It was such a strong memory about that tragedy, but what else I was listening to then?</p> 
                
-            <p>A quick Google later and I found half a dozen albums that I was listening to on repeat from that same moment. Off I went to re-live my musical fall of 1993 with Counting Crows, Pearl Jam, and Billy Joel.
+            <p>A quick Google later and I found half a dozen albums that I had on repeat from that same moment. Off I went to re-live my musical fall of 1993 with Counting Crows, Pearl Jam, and Billy Joel.
                 I hope this project offers users a similar experience by providing a Billboard chart based timeline to explore.     
             </p>
             <p>The Front-End is styled with Bootstrap, and the project was built with HTML, CSS, Javascript, Python, Flask, and SQLAlchemy.
-                I have avoided using Flask plugins such as Flask-Login or Flask-Restless in favor of practicing writing such features myself. 
+                I have avoided using Flask plugins such as Flask-Login or Flask-Restless in favor of practicing writing those API and CRUD features myself. 
             </p>
             <p>Data for Billboard charts and songs is <strong>not</strong> fetched ahead of time, but rather collected dynamically based on user requests. 
                 This fulfulls project specifications for the use of APIs, and it means that every user search helps build the site's data-scope. 
-                Explore all you like and pay-it-forward for future users!</p>
+                Explore all you like and pay-it-forward for future users by fetching more songs and image urls!</p>
             <p>One notable limitation of this project's data is that chart results are exclusively for the Billboard's "Hot 100" (8/4/1958 - Present). Among the future features this project could include are:
                  <ul>
                     <li>Offering results from other charts (such as the Global 200 or genre-charts like R&B/Hip-Hop or Country)</li>
-                    <li>Adding additional song and track data from API integrations to Spotify/iTunes/Wikipedia</li>
-                    <li>Embedded listening options or playlist creation features with Spotify authentication</li>
+                    <li>Integrating track information from Spotify/iTunes/Wikipedia/Genius</li>
+                    <li>Embedded listening options or playlist export through Spotify authentication</li>
                     <li>Provide additional context for chart dates such as major world events, sports results, or names of elected officials</li>
-                    <li>Relying on pre-fetched Billboard data and instead using an internal API for results, enabling far more dynamic search options.</li>
+                    <li>Use pre-fetched Billboard data for results with an internal API, enabling far more dynamic search options over the whole Hot 100.</li>
                  </ul>   
             </p>
         </div>
         
     </div>
-    <div class="col-xs-2 col-lg-2">
-    </div>
-</div>
+    
   <div>
   
 </div>

@@ -26,7 +26,21 @@
                 <img class="img-fluid img-thumbnail" src="{{song.song_img_url}}" alt="default album image" width="50px">
             </div>
             <div class="col-sm-7 text-left align-middle">
+                <form method="POST" 
+                                action="/chart/{{chart.chart_date}}/favorite/{{song.id}}" 
+                                class="float-left" 
+                                name="favorite-form">
+                                <button 
+                                    class="btn p-0 mr-1" 
+                                    type="submit"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="top" 
+                                    title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
+                                    <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
+                                 </button>
+                             </form>
                 {{song.title}} by {{song.artist}}
+                
             </div>
             <div class="col-sm-1 text-center"> {{appearance.last_pos}}
             </div>
