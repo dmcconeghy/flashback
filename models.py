@@ -29,6 +29,7 @@ class Song(db.Model):
     missing_page = db.Column(db.Boolean, default=None)
 
     charts = db.relationship('ChartAppearance')
+    favorite = db.relationship('Favorite')
 
     def has_image(self):
 
@@ -144,8 +145,6 @@ class Chart(db.Model):
 
         return date.fromordinal(prior_chart)
 
-    
-
 class User(db.Model):
     """An application user"""
 
@@ -154,11 +153,11 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.Text, nullable=False, unique=True)
+    email = db.Column(db.Text, unique=True)
     profile_img_url = db.Column(db.Text, default="/static/media/blank_profile.png")
     date_of_birth = db.Column(db.DateTime)
 
-    # favorite_songs = db.relationship('Favorite')
+    favorite_songs = db.relationship('Favorite')
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"

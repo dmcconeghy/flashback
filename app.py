@@ -1,19 +1,17 @@
-from ctypes import util
 import os
-import requests
 
-from flask import Flask, render_template, redirect, session, flash, g 
+from flask import Flask, render_template, redirect, session, flash, g, request 
 from flask_debugtoolbar import DebugToolbarExtension
-
-
+from sqlalchemy import and_
 from werkzeug.exceptions import Unauthorized
 
 from models import db, connect_db, User, Song, Favorite
 from forms import SignupForm, LoginForm, NewSongForFavoriteList
-import chart
-import song
-import search
-import utilities
+import views.chart as chart
+import views.song as song
+import views.search as search
+import views.utilities as utilities
+
 
 
 CURR_USER_KEY = 'current_user'
@@ -99,20 +97,6 @@ def user_signup():
 
         return render_template("signup.html", form=form)
 
-################### USER PROFILE PAGE ###################
-
-@app.route('/users/<int:user_id>')
-def show_user_page(user_id):
-    """Show a logged in user their personal user page"""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    user = User.query.get_or_404(user_id)
-
-    return render_template("user_page.html", user=user)
-
 ################### USER LOGIN ###################
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -133,6 +117,77 @@ def login():
 
     return render_template('login.html', form=form)
 
+################### USER PROFILE PAGE ###################
+@app.route('/user')
+def user_redirect():
+
+    if not g.user:
+        flash("Please signup for an account or log in", "warning")
+        return redirect("/signup")
+
+    return redirect(f"/users/{g.user.id}")
+
+@app.route('/users/<int:user_id>', methods=['GET', 'POST'])
+def show_user_page(user_id):
+    """Show a logged in user their personal user page"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+
+    form = NewSongForFavoriteList()
+
+    favorites = Favorite.query.all()
+    favorites_ids = [f.song_id for f in favorites]
+
+    songbank = Song.query.filter(Song.id.notin_(favorites_ids)).limit(10).all()
+    # songbank_ids = [s.id for s in songbank]
+
+    form.song.choices = [(s.id, (f"{s.title} by {s.artist}")) for s in songbank]
+        
+    songs = [Song.query.get(sid) for sid in favorites_ids]
+
+    if form.validate_on_submit():
+
+        add_favorite = Favorite(
+                            user_id=user.id, 
+                            song_id=form.song.data)
+
+        db.session.add(add_favorite)
+        db.session.commit()
+
+        # Renewing these variable's contents
+        # This ensures the reload contains updated information. 
+        favorites = Favorite.query.all()
+        favorites_ids = [f.song_id for f in favorites]
+
+        songbank = Song.query.filter(Song.id.notin_(favorites_ids)).limit(10).all()
+        # songbank_ids = [s.id for s in songbank]
+
+        form.song.choices = [(s.id, s.title) for s in songbank]
+
+        songs = [Song.query.get(sid) for sid in favorites_ids]
+
+        added_song = Song.query.get(form.song.data)
+
+        flash(f"Added {added_song.title} to your favorites!", 'success')
+
+        return render_template("user_page.html", 
+                            user=user, 
+                            form=form, 
+                            favorites=favorites,
+                            favorites_ids=favorites_ids, 
+                            songs=songs)
+        
+    return render_template("user_page.html", 
+                            user=user, 
+                            form=form, 
+                            favorites=favorites,
+                            favorites_ids=favorites_ids, 
+                            songs=songs)
+
 ################### USER LOGOUT ###################
 
 @app.route('/logout')
@@ -144,6 +199,30 @@ def logout():
     
     return redirect("/login")
 
+################### USER PROFILE REMOVE FAVORITE ###################
+
+@app.route('/users/<int:user_id>/removefavorite/<int:song_id>', methods=['POST'])
+def remove_favorites(user_id, song_id):
+
+    remove_favorite = (
+        Favorite
+        .query
+        .filter(
+        and_(
+            Favorite.user_id==g.user.id, 
+            Favorite.song_id==song_id)
+            )
+        .first())
+    
+    db.session.delete(remove_favorite)
+    db.session.commit()
+
+    removed_favorite = Song.query.get_or_404(song_id)
+
+    flash(f"{removed_favorite.artist}'s {removed_favorite.title} removed from your favorites", "warning")
+
+    return redirect(f"/users/{user_id}")
+
 ################### CHARTS ################### 
 #
 #   See charts.py for:
@@ -153,7 +232,8 @@ def logout():
 #
 app.add_url_rule('/charts', view_func=chart.show_list_of_charts, methods=['GET', 'POST'])
 app.add_url_rule('/chart/<string:req_chart_date>', view_func=chart.show_chart, methods=['GET', 'POST'])
-
+app.add_url_rule('/chart/<string:chart_date>/favorite/<int:song_id>', view_func=chart.show_chart_favorites, methods=['POST'])
+app.add_url_rule('/charts/favorite/<int:song_id>', view_func=chart.show_charts_favorites, methods=['POST'])
 ################### SONG/S ################### 
 #
 #   See song.py for
@@ -161,15 +241,15 @@ app.add_url_rule('/chart/<string:req_chart_date>', view_func=chart.show_chart, m
 #   def show_list_of_songs(page=1) for a paginated list of songs in the database
 #   def show_song_details(song_id) for a detailed song page
 #   def show_song_gallery() for a gallery version of a selection of songs in the database
-#   def fetch_song_art(song_id) for querying a song's art. Should be admin-only. 
 #   def listing() for a jukebox style version of chart information
 # 
 app.add_url_rule('/songs', view_func=song.show_list_of_songs, methods=['GET', 'POST'])
 app.add_url_rule('/songs/<int:page>', view_func=song.show_list_of_songs, methods=['GET', 'POST'])
 app.add_url_rule('/song/<int:song_id>', view_func=song.show_song_details)
 app.add_url_rule('/songs/gallery', view_func=song.show_song_gallery)
-app.add_url_rule('/song/art/<int:song_id>', view_func=song.fetch_song_art, methods=['GET', 'POST'])
 app.add_url_rule('/listing', view_func=song.listing)
+app.add_url_rule('/songs/<int:page>/favorite/<int:song_id>', view_func=song.toggle_songs_like, methods=["POST"])
+
 
 ################### SEARCH ###################
 # 
@@ -200,21 +280,8 @@ app.add_url_rule('/about', view_func=utilities.about)
 app.add_url_rule('/loading', view_func=utilities.loading_screen)
 app.add_url_rule('/test', view_func=utilities.test_route)
 app.add_url_rule('/images/<string:artist>', view_func=utilities.get_image, methods=['GET', 'POST'])
+app.add_url_rule('/features', view_func=utilities.features)
 
-################### USER FAVORITES ###################
-
-@app.route("/favorites/")
-def show_favorites():
-
-    form = NewSongForFavoriteList()
-
-    songs = Song.query.all()
-
-    # favorites = Favorite.query.get(user_id).all()
-    
-    form.song.choices(songs)
-
-    return render_template('user_page.html', form=form, favorites=songs)
 
 ################### ERROR ###################
 

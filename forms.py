@@ -25,4 +25,4 @@ class LoginForm(FlaskForm):
 class NewSongForFavoriteList(FlaskForm):
     """ Form for adding songs to favorites """
 
-    song = SelectField('Song to Add', coerce=int)
+    song = SelectField('Add a song to your favorites', coerce=int)

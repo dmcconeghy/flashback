@@ -16,5 +16,5 @@ Billboard does NOT have a search endpoint for specific songs or artists. (This i
 
 
 
-![schema diagram](/Flashback%20Data%20Schema.jpeg)
+![schema diagram](static/media/Flashback%20Data&20Schema.jpeg)
 

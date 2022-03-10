@@ -17,6 +17,14 @@ def about():
 
     return render_template('about.html')
 
+################### PROJECT FEATURES ###################    
+
+def features():
+    """ Returns the features page"""
+
+    return render_template('features.html')
+
+
 ################### LOADING ###################
 
 def loading_screen():
@@ -27,6 +35,9 @@ def loading_screen():
 
 def test_route():
 
+    test = db.session.query(Song.id, Song.title).limit(10).all()
+
+    print(test)
     return render_template('test.html')
 
 ################### ARTIST IMAGE ###################
