@@ -249,7 +249,7 @@ app.add_url_rule('/song/<int:song_id>', view_func=song.show_song_details)
 app.add_url_rule('/songs/gallery', view_func=song.show_song_gallery)
 app.add_url_rule('/listing', view_func=song.listing)
 app.add_url_rule('/songs/<int:page>/favorite/<int:song_id>', view_func=song.toggle_songs_like, methods=["POST"])
-
+app.add_url_rule('/song/<int:song_id>/favorite', view_func=song.toggle_song_like, methods=['POST'])
 
 ################### SEARCH ###################
 # 
