@@ -26,3 +26,12 @@ class NewSongForFavoriteList(FlaskForm):
     """ Form for adding songs to favorites """
 
     song = SelectField('Add a song to your favorites', coerce=int)
+
+class UpdateProfile(FlaskForm):
+    """Form for updating a user's' profile"""
+
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[Optional(), Email()])
+    profile_img_url = StringField('(Optional) Image URL', validators=[Optional()])
+    date_of_birth = DateField("Date of Birth", validators=[Optional()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])

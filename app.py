@@ -1,12 +1,11 @@
 import os
 
-from flask import Flask, render_template, redirect, session, flash, g, request 
+from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import and_
-from werkzeug.exceptions import Unauthorized
 
 from models import db, connect_db, User, Song, Favorite
-from forms import SignupForm, LoginForm, NewSongForFavoriteList
+from forms import SignupForm, LoginForm, NewSongForFavoriteList, UpdateProfile
 import views.chart as chart
 import views.song as song
 import views.search as search
@@ -95,7 +94,7 @@ def user_signup():
 
     else:
 
-        return render_template("signup.html", form=form)
+        return render_template("users/signup.html", form=form)
 
 ################### USER LOGIN ###################
 
@@ -115,7 +114,7 @@ def login():
         
         flash("Invalid username or password", "danger")
 
-    return render_template('login.html', form=form)
+    return render_template('users/login.html', form=form)
 
 ################### USER PROFILE PAGE ###################
 @app.route('/user')
@@ -174,14 +173,14 @@ def show_user_page(user_id):
 
         flash(f"Added {added_song.title} to your favorites!", 'success')
 
-        return render_template("user_page.html", 
+        return render_template("users/user_page.html", 
                             user=user, 
                             form=form, 
                             favorites=favorites,
                             favorites_ids=favorites_ids, 
                             songs=songs)
         
-    return render_template("user_page.html", 
+    return render_template("users/user_page.html", 
                             user=user, 
                             form=form, 
                             favorites=favorites,
@@ -222,6 +221,35 @@ def remove_favorites(user_id, song_id):
     flash(f"{removed_favorite.artist}'s {removed_favorite.title} removed from your favorites", "warning")
 
     return redirect(f"/users/{user_id}")
+
+################### UPDATE USER PROFILE ###################
+
+@app.route('/users/profile', methods=['GET', 'POST'])
+def update_profile():
+
+    if not g.user:
+        flash("Access unauthorized", "danger")
+        return redirect('/')
+    
+    user=g.user
+
+    form=UpdateProfile(obj=user)
+
+    if form.validate_on_submit():
+        if User.authenticate(user.username, form.password.data):
+            user.username = form.username.data
+            user.email = form.email.data
+            user.profile_img_url = form.profile_img_url.data or "/static/media/blank_profile.png"
+            user.date_of_birth = form.date_of_birth.data
+
+            db.session.commit()
+            return redirect(f"/users/{user.id}")
+        
+        flash("Invalid credentials.", 'danger')
+            
+    return render_template('/users/edit.html', form=form, user=user)
+
+
 
 ################### CHARTS ################### 
 #
@@ -273,14 +301,16 @@ app.add_url_rule('/random', view_func=search.random_chart, methods=['GET', 'POST
 #   def about() returns the about this project page
 #   def loading_screen() supplies a loading modal for timed queries
 #   def test_route() exists for temporary feature testing
-#   def get_image(artist) is a route to test image scraping
+#   def get_artist_image(artist) is a route to test image scraping for individual artists
+#   def get_chart_images(chart_date) is a route to test image scraping for chart instances
 #   
 app.add_url_rule('/', view_func=utilities.root, methods=['GET', 'POST'])
 app.add_url_rule('/about', view_func=utilities.about)
 app.add_url_rule('/loading', view_func=utilities.loading_screen)
 app.add_url_rule('/test', view_func=utilities.test_route)
-app.add_url_rule('/images/<string:artist>', view_func=utilities.get_image, methods=['GET', 'POST'])
+app.add_url_rule('/images/<string:artist>', view_func=utilities.get_artist_image, methods=['GET', 'POST'])
 app.add_url_rule('/features', view_func=utilities.features)
+app.add_url_rule('/chart/images/<string:chart_date>', view_func=utilities.get_chart_images, methods=['GET', 'POST'])
 
 
 ################### ERROR ###################

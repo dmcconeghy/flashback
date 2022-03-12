@@ -32,16 +32,11 @@ def show_list_of_songs(page=1):
         
         favorites=[]
 
-        flash("You need to log in to save favorites.", "warning")
-
-        return redirect("/login")
     else:
 
         favorites = [f.song_id for f in g.user.favorite_songs]
-        
-    
-        
-    return render_template('songs.html', songs=songs, chart_total=chart_total, favorites=favorites)
+         
+    return render_template('songs/songs.html', songs=songs, chart_total=chart_total, favorites=favorites)
 
 def show_song_details(song_id):
 
@@ -60,7 +55,7 @@ def show_song_details(song_id):
         
     appearances = ChartAppearance.query.filter(ChartAppearance.song_id == song_id).all()
     
-    return render_template('song.html', song=song, appearances=appearances, favorites=favorites)
+    return render_template('songs/song.html', song=song, appearances=appearances, favorites=favorites)
 
 
 def show_song_gallery():
@@ -78,13 +73,13 @@ def show_song_gallery():
                 # Search for an image
                 song.get_artist_image()
 
-    return render_template('song_gallery.html', songs=songs)
+    return render_template('songs/song_gallery.html', songs=songs)
 
 def listing():
 
     songs = Song.query.limit(20).all()
 
-    return render_template('listing.html', songs=songs)
+    return render_template('songs/listing.html', songs=songs)
 
 
 def toggle_songs_like(page, song_id):

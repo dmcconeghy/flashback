@@ -37,6 +37,8 @@ def chart_exists(chart_date):
 def chart_search(chart_date):
     """ 
     Creates a chart entry and populates the db with songs and appearance data.
+    Image URL addition is handled through /chart/<int:chart_date> when the chart is displayed after its entries exist in the db. 
+    This uses two calls per chart and could definitely be refactored to be included here.
     """
 
     fetched_chart = billboard.ChartData('hot-100', date=chart_date)
@@ -138,7 +140,7 @@ def search():
         
         return redirect(f"/exists/{inputted_date}")
         
-    return render_template("search.html", form=form)
+    return render_template("navbar/search.html", form=form)
 
 def random_chart():
     

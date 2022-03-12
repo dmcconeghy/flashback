@@ -5,20 +5,25 @@
 {% block content %}
 <div class="div container pt-5">
   Search variables:
-    <p>{{artist}}</p>
-    <p>{{hyphen_artist}}</p>
-    <p>{{space_artist}}</p>
-    <p><a href="{{formatted_url}}">{{formatted_url}}</a></p>
-    <p>{{img_element}}</p>
-    <p>{{alt}}</p>  
-    <p>{{image_src}}</p>
+    <p>Query-string: {{artist}}</p>
+    <p>hyphenated check: {{hyphen_artist}}</p>
+    <p>Spaced version{{space_artist}}</p>
+    <p>Artist Page URL? <a href="{{formatted_url}}">{{formatted_url}}</a></p>
+    <p>Image Element: {{img_element}}</p>
+    <p>Verification of Image Alt Text: {{alt}}</p>  
+    <p>Image URL check: {{image_src}}</p>
     <img src="{{image_src}}">
 
-  {% for song in songs%}
-  list: 
-    {{song.title}}:{{song.artist}}
-    <img src="{{song.song_img_url}}" height="50px" wdith="50px">
-  {% endfor %}
+  <ul>
+    {% for song in songs%}
+    
+    <li>: 
+      
+      <img src="{{song.song_img_url}}" height="50px" wdith="50px">
+      {{song.title}}
+    </li>
+    {% endfor %}
+  </ul>
 
   <hr>
   
