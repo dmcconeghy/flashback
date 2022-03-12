@@ -12,27 +12,36 @@
             <a href="https://www.linkedin.com/in/david-mcconeghy/"><img class="rounded float-right img-fluid p-1 ml-3 mb-1 col-5 col-sm-3 col-xl-2" src="../static/media/dmcconeghy.jpg"  alt="Profile shot of Dave McConeghy"></a>
 
             
-            <p>I'm <a href="https://www.linkedin.com/in/david-mcconeghy/">Dave McConeghy</a> and Flashback is a musical memory project I completed for my full-stack software engineering bootcamp. 
-                You'll appreciate this project if you've ever had a moment where you heard a song and thought, "I remember when I first heard that!"</p>
-            <p>That's what happened to me when I happened to hear Nirvana's "All Apologies" a while back. I thought, "I remember when that came out. It was 1993 and Cobain killed himself just a few months later."
-                It was such a strong memory about that tragedy, but what else I was listening to then?</p> 
-               
-            <p>A quick Google later and I found half a dozen albums that I had on repeat from that same moment. Off I went to re-live my musical fall of 1993 with Counting Crows, Pearl Jam, and Billy Joel.
-                I hope this project offers users a similar experience by providing a Billboard chart based timeline to explore.     
-            </p>
-            <p>The Front-End is styled with Bootstrap, and the project was built with HTML, CSS, Javascript, Python, Flask, and SQLAlchemy.
+            <p> I'm <a href="https://www.linkedin.com/in/david-mcconeghy/">Dave McConeghy</a> 
+                and Flashback is a capstone project I completed for my full-stack software engineering bootcamp. 
+                The site's front-end is styled with Bootstrap, and the project's back-end uses Python, Flask, and SQLAlchemy.
                 I have avoided using Flask plugins such as Flask-Login or Flask-Restless in favor of practicing writing those API and CRUD features myself. 
             </p>
-            <p>Data for Billboard charts and songs is <strong>not</strong> fetched ahead of time, but rather collected dynamically based on user requests. 
-                This fulfulls project specifications for the use of APIs, and it means that every user search helps build the site's data-scope. 
-                Explore all you like and pay-it-forward for future users by fetching more songs and image urls!</p>
-            <p>One notable limitation of this project's data is that chart results are exclusively for the Billboard's "Hot 100" (8/4/1958 - Present). Among the future features this project could include are:
+
+            <p> Perhaps you'll appreciate this project if you've ever had a moment where you heard a song and thought, "I remember when I first heard that on MTV Unplugged!" 
+                That's what happened to me when I happened to hear "All Apologies" a while back. 
+                I thought, "I remember when that came out. It was the fall of 1993 and Cobain killed himself the next Spring."
+                It was such a strong memory about that tragedy, but what else I was listening to then?
+            </p> 
+               
+            <p>A quick Google later and I found half a dozen albums that I had on repeat from that same moment. 
+                Off I went to re-live my musical fall of 1993 with Counting Crows, Pearl Jam, and Billy Joel. 
+                None of Nirvana's songs ever made the Billboard Hot 100 (though their MTV Unplugged album was by most measures the most popular album of 1994),
+                but I hope this project offers users a similar opportunity by providing a simple tool to explore Billboard charts.     
+            </p>
+            
+            <p> Data for Billboard charts and songs is <strong>not</strong> fetched prior to deployment, but rather collected dynamically based on user requests. 
+                This fulfulls project specifications for the use of external APIs, and it means that every user search helps build the site's data-scope. 
+                Explore all you like and pay-it-forward for future users by fetching more songs and image urls! 
+                Please note that I claim no rights for either Billboard chart data or images. This project remains a personal, educational exercise alone.
+            </p>
+            <p> One limitation of this project's data is that chart results are exclusively for the Billboard's "Hot 100" (8/4/1958 - Present). 
+                Just as it would be nice to browser other charts like the Global 200, there are many other opportunities for improvements such as:
                  <ul>
-                    <li>Offering results from other charts (such as the Global 200 or genre-charts like R&B/Hip-Hop or Country)</li>
-                    <li>Integrating track information from Spotify/iTunes/Wikipedia/Genius</li>
+                    <li>Integrating lyrics or other track/album information from Spotify/iTunes/Wikipedia/Genius</li>
                     <li>Embedded listening options or playlist export through Spotify authentication</li>
-                    <li>Provide additional context for chart dates such as major world events, sports results, or names of elected officials</li>
-                    <li>Use pre-fetched Billboard data for results with an internal API, enabling far more dynamic search options over the whole Hot 100.</li>
+                    <li>Increasing the site's use of internal JSON API to enable loading-free features</li>
+                    <li>Adding a search feature to find specific artists or songs</li> 
                  </ul>   
             </p>
         </div>

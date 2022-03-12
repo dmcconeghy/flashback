@@ -39,7 +39,7 @@
                                     <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
                                  </button>
                              </form>
-                {{song.title}} by {{song.artist}}
+                {{song.title | truncate(25)}} by {{song.artist | truncate(30)}}
                 
             </div>
             <div class="col-sm-1 text-center"> {{appearance.last_pos}}

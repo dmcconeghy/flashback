@@ -7,13 +7,14 @@
 <div class="container-fluid pt-5 text-center">
 
     <h2>Billboard's Hot 100</h2>
+    <p><small>Database contains X charts</small></p>
     <hr>
 </div>
 
 <div class="container col col-md-10 col-xl-8">
     
 	
-        {% for chart in charts %}
+        {% for chart in charts.items %}
     
             <div class="row text-center col-md-10 col-lg-10">
                 <div class="col col-md-3">
@@ -86,9 +87,46 @@
             </div>
             </div>
             **********************
-            
+     
                     
-        {% endfor%}       
+        {% endfor%}    
+        
+               <!-- Pagination -->
+               <div class="text-center container pt-5">
+                <a href="/charts/{{ charts.prev_num }}" 
+                    class="btn btn-outline-dark 
+                    {% if charts.page == 1 %}disabled{% endif %}">
+                    &laquo;
+                </a>
+    
+            
+        {% for page_num in charts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}        
+                    {% if page_num %}
+                        {% if charts.page == page_num %}
+                            <a href="/charts/{{page_num}}"
+                            class="btn btn-dark">
+                                {{ page_num }}
+                            </a>
+                        {% else %}
+                            <a href="/charts/{{page_num}}"
+                            class="btn btn-outline-dark">
+                                {{ page_num }}
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        ...
+                    {% endif %}
+                {% endfor %}
+    
+                <a href="/charts/{{ charts.next_num }}"
+                class="btn btn-outline-dark 
+                {% if charts.page == charts.pages %}disabled{% endif %}">
+                    &raquo;
+                </a>
+    
+               
+        
+            </div>
     
 </div>
 
