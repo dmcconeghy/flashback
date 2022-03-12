@@ -4,29 +4,22 @@ import requests
 from sqlalchemy import and_
 
 
-
 def show_list_of_songs(page=1):
     """ Returns a list of database stored songs from queried charts """
     q = request.args.get('page')
 
     if q:
-        songs = Song.query.order_by(Song.id).paginate(page=q, per_page=10)
+        songs = (Song
+                    .query
+                    .order_by(Song.id)
+                    .paginate(page=q, per_page=10))
     else:
-        songs = Song.query.order_by(Song.id).paginate(page=page, per_page=10)
+        songs = (Song
+                    .query
+                    .order_by(Song.id)
+                    .paginate(page=page, per_page=10))
     
     chart_total = Chart.query.count()
-
-    # response = Song.query.order_by(Song.id).all()
-
-    # for song in all_songs:
-    #     # Check if artist page has been searched for
-    #     if song.artist_page == "Not Queried":
-            
-    #         # Check if artist page search turned up empty
-    #         if song.find_artist_page() != False:
-                
-    #             # Search for an image
-    #             song.get_artist_image()
 
     if not g.user:
         
