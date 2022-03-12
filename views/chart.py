@@ -25,13 +25,23 @@ def show_list_of_charts():
     for chart in charts:
         # chart_date = chart.chart_date.isoformat()
 
-        song_ids = [s.song_id for s in chart.songs]
-        appearance_objects = [a for a in chart.songs]
+        ranked_appearances = (ChartAppearance
+                                .query
+                                .filter(ChartAppearance.chart_date == chart.chart_date.isoformat())
+                                .order_by(ChartAppearance.rank)
+                                .limit(5)
+                                )
+
+        ranked_song_ids = ([ra.song_id for ra in ranked_appearances])
+
+
+        # song_ids = [s.song_id for s in chart.songs]
+        # appearance_objects = [a for a in chart.songs]
 
         # sort the list of appearances by their ranks
-        appearance_objects.sort(key=lambda x: x.rank)
+        # appearance_objects.sort(key=lambda x: x.rank)
 
-        song_objects = [Song.query.get(sid) for sid in song_ids]
+        song_objects = [Song.query.get(rsid) for rsid in ranked_song_ids]
 
         #                 
         # song_objects = [(Song
@@ -43,7 +53,7 @@ def show_list_of_charts():
         #                 ) for sid in song_ids]
 
 
-        chart_merge = zip(song_objects, appearance_objects)
+        chart_merge = zip(song_objects, ranked_appearances)
         chart_list.append(chart_merge)
 
     favorites = [f.song_id for f in g.user.favorite_songs]
@@ -201,23 +211,17 @@ def show_chart(req_chart_date):
     appearances = (
         ChartAppearance
         .query
-        .join(Song, ChartAppearance.song_id == Song.id)
         .filter(ChartAppearance.chart_date == req_chart_date)
         .order_by(ChartAppearance.rank)
         .all()
         )
 
-    songs = (
-        Song
-        .query
-        .join(ChartAppearance, Song.id == ChartAppearance.song_id)
-        .filter(ChartAppearance.chart_date == req_chart_date)
-        .all()
-        )
+    song_ids = [ra.song_id for ra in appearances]
+
+    songs = [Song.query.get(sid) for sid in song_ids]
 
     favorites = [f.song_id for f in g.user.favorite_songs]
 
-    
     BASE_URL = "http://billboard.com/charts/hot-100/"
 
     URL = BASE_URL + req_chart_date
