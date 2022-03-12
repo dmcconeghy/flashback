@@ -54,6 +54,8 @@ def chart_search(chart_date):
     db.session.add(new_chart)
     db.session.commit()
 
+    query_date = new_chart.chart_date.isoformat()
+
     for entry in fetched_chart:
 
         # Check if it is in our db already
@@ -124,7 +126,7 @@ def chart_search(chart_date):
     
     BASE_URL = "http://billboard.com/charts/hot-100/"
 
-    URL = BASE_URL + new_chart.chart_date
+    URL = BASE_URL + query_date
     
     def get_data(url):
         r = requests.get(url)
@@ -156,7 +158,7 @@ def chart_search(chart_date):
 
         ranked_appearances = (ChartAppearance
                                 .query
-                                .filter(ChartAppearance.chart_date == new_chart.chart_date)
+                                .filter(ChartAppearance.chart_date == query_date)
                                 .order_by(ChartAppearance.rank)
                                 .all())
   

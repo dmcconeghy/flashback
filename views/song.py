@@ -56,15 +56,15 @@ def show_song_gallery():
 
     songs = Song.query.limit(20).all()
 
-    for song in songs:
-        # Check if artist page has been searched for
-        if song.artist_page == "Not Queried":
+    # for song in songs:
+    #     # Check if artist page has been searched for
+    #     if song.artist_page == "Not Queried":
             
-            # Check if artist page search turned up empty
-            if song.find_artist_page() != False:
+    #         # Check if artist page search turned up empty
+    #         if song.find_artist_page() != False:
                 
-                # Search for an image
-                song.get_artist_image()
+    #             # Search for an image
+    #             song.get_artist_image()
 
     return render_template('songs/song_gallery.html', songs=songs)
 
