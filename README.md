@@ -9,7 +9,7 @@ Users can explore any Billboard Hot 100 chart since 1958 and save their favorite
 
 It features full CRUD for users, and relies on the [billboard-charts API](https://github.com/guoguo12/billboard-charts) to populate a Postgresql backend coded with Python, Flask, and Flask-SQLAlchemy. 
 
-Database population is performed upon first request, with massive reductions in load times for subsequent calls to the same chart endpoint and signficant reductions in load times for chronologically adjacent charts (i.e., querying 2000-1-1 reduces load times for calls to 1999-12-25 and 2000-1-8).  
+Database population is performed upon first request, with massive reductions in load times for subsequent calls to the same chart endpoint and signficant reductions in load times for chronologically adjacent charts (i.e., querying 2000-1-7 reduces load times for calls to 2000-01-01 and 2000-01-15).  
 
 [Site is currently deployed at https://flashback-dwm.herokuapp.com/](https://flashback-dwm.herokuapp.com/) 
 

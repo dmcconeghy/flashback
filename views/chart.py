@@ -126,60 +126,10 @@ def show_chart(req_chart_date):
 
     favorites = [f.song_id for f in g.user.favorite_songs]
 
-    BASE_URL = "http://billboard.com/charts/hot-100/"
-
-    URL = BASE_URL + req_chart_date
-    
-    def get_data(url):
-        r = requests.get(url)
-        if r.status_code != 404:
-            return r.text
-        else:
-            return "Not Found"
-    
-    htmldata = get_data(URL)
-
-    if htmldata != "Not Found":
-        raw = BeautifulSoup(htmldata, 'html.parser')
-
-        chart_results = raw.select_one('.chart-results-list')
-
-        results_list = chart_results.select('.o-chart-results-list-row')
-
-        img_elements = []
-
-        for result in results_list:
-            img_elements += result.select("img")
-
-        srcs = []
-
-        for element in img_elements:
-            srcs.append(element['data-lazy-src'])
-
-        # chart_object = Chart.query.filter(Chart.chart_date==req_chart_date).first()
-
-        ranked_appearances = (ChartAppearance
-                                .query
-                                .filter(ChartAppearance.chart_date == req_chart_date)
-                                .order_by(ChartAppearance.rank)
-                                .all())
-  
-        ranked_song_ids = ([ra.song_id for ra in ranked_appearances])
-
-        src_and_song_id_merge = zip(srcs, ranked_song_ids)
-        
-        for src, id in src_and_song_id_merge:
-
-            entry = Song.query.get(id)
-
-            if src != 'https://www.billboard.com/wp-content/themes/vip/pmc-billboard-2021/assets/public/lazyload-fallback.gif':
-                entry.song_img_url = src
-                db.session.commit()
-
-        # ranked_song_objects = ([Song.query.get(ra.song_id) for ra in ranked_appearances])
-
-
-    return render_template('charts/chart_results.html', chart=chart, results=zip(songs, appearances), favorites=favorites)
+    return render_template('charts/chart_results.html', 
+                                chart=chart, 
+                                results=zip(songs, appearances), 
+                                favorites=favorites)
 
 def show_chart_favorites(chart_date, song_id):
     """Toggles a favorite song from the chart list to the user's favorites list"""

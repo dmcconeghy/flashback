@@ -5,6 +5,8 @@ import random
 import datetime
 from forms import DateSearchForm
 from sqlalchemy import and_
+import requests
+from bs4 import BeautifulSoup
 
 
 def chart_exists(chart_date):
@@ -37,8 +39,8 @@ def chart_exists(chart_date):
 def chart_search(chart_date):
     """ 
     Creates a chart entry and populates the db with songs and appearance data.
-    Image URL addition is handled through /chart/<int:chart_date> when the chart is displayed after its entries exist in the db. 
-    This uses two calls per chart and could definitely be refactored to be included here.
+    It then queries the chart to scrape image urls and commits those to the songs. 
+    
     """
 
     fetched_chart = billboard.ChartData('hot-100', date=chart_date)
@@ -120,6 +122,57 @@ def chart_search(chart_date):
             db.session.add(new_appearance)
             db.session.commit()
     
+    BASE_URL = "http://billboard.com/charts/hot-100/"
+
+    URL = BASE_URL + new_chart.chart_date
+    
+    def get_data(url):
+        r = requests.get(url)
+        if r.status_code != 404:
+            return r.text
+        else:
+            return "Not Found"
+    
+    htmldata = get_data(URL)
+
+    if htmldata != "Not Found":
+        raw = BeautifulSoup(htmldata, 'html.parser')
+
+        chart_results = raw.select_one('.chart-results-list')
+
+        results_list = chart_results.select('.o-chart-results-list-row')
+
+        img_elements = []
+
+        for result in results_list:
+            img_elements += result.select("img")
+
+        srcs = []
+
+        for element in img_elements:
+            srcs.append(element['data-lazy-src'])
+
+        # chart_object = Chart.query.filter(Chart.chart_date==req_chart_date).first()
+
+        ranked_appearances = (ChartAppearance
+                                .query
+                                .filter(ChartAppearance.chart_date == new_chart.chart_date)
+                                .order_by(ChartAppearance.rank)
+                                .all())
+  
+        ranked_song_ids = ([ra.song_id for ra in ranked_appearances])
+
+        src_and_song_id_merge = zip(srcs, ranked_song_ids)
+        
+        for src, id in src_and_song_id_merge:
+
+            entry = Song.query.get(id)
+
+            if src != 'https://www.billboard.com/wp-content/themes/vip/pmc-billboard-2021/assets/public/lazyload-fallback.gif':
+                entry.song_img_url = src
+                db.session.commit()
+
+        # ranked_song_objects = ([Song.query.get(ra.song_id) for ra in ranked_appearances])
 
     return redirect(f"/chart/{fetched_chart.date}")
 
