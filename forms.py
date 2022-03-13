@@ -35,3 +35,8 @@ class UpdateProfile(FlaskForm):
     profile_img_url = StringField('(Optional) Image URL', validators=[Optional()])
     date_of_birth = DateField("Date of Birth", validators=[Optional()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+
+class BirthdayUpdateForm(FlaskForm):
+    """Form for updating just a user's birthday when it is missing from their profile"""
+
+    date_of_birth = DateField("Date of Birth", validators=[Optional()])

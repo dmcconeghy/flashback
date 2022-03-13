@@ -9,6 +9,11 @@ def show_list_of_charts(page=1):
         Returns a paginated list of database stored charts showing their first five songs.
     
     """
+    if not g.user:
+        favorites = []
+    else:
+        favorites = [f.song_id for f in g.user.favorite_songs]
+
 
     q = request.args.get('page')
 
@@ -43,7 +48,7 @@ def show_list_of_charts(page=1):
         chart_merge = zip(song_objects, ranked_appearances)
         chart_list.append(chart_merge)
 
-    favorites = [f.song_id for f in g.user.favorite_songs]
+    
         
     return render_template('charts/charts.html', 
                                 charts=charts, 
@@ -55,8 +60,8 @@ def show_list_of_charts_favorites(song_id):
     """Toggles a favorite song from the chart list to the user's favorites list"""
 
     if not g.user:
-        flash("You need to log in to save favorites.", "warning")
-        return redirect("/")
+        flash("You need to be logged in to save favorites.", "warning")
+        return redirect("/signup")
 
     favorited_song = Song.query.get_or_404(song_id)
     

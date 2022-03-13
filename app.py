@@ -1,11 +1,11 @@
 import os
 
-from flask import Flask, render_template, redirect, session, flash, g
+from flask import Flask, render_template, redirect, session, flash, g, request
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import and_
 
 from models import db, connect_db, User, Song, Favorite
-from forms import SignupForm, LoginForm, NewSongForFavoriteList, UpdateProfile
+from forms import SignupForm, LoginForm, NewSongForFavoriteList, UpdateProfile, BirthdayUpdateForm
 import views.chart as chart
 import views.song as song
 import views.search as search
@@ -103,14 +103,14 @@ def login():
     """ Handle user login """
 
     form = LoginForm()
-
+    
     if form.validate_on_submit():
         user = User.authenticate(form.username.data, form.password.data)
 
         if user:
             do_login(user)
             flash(f"Welcome back, {user.username}!", "success")
-            return redirect("/")
+            return redirect(f"/users/{user.id}")
         
         flash("Invalid username or password", "danger")
 
@@ -248,8 +248,6 @@ def update_profile():
         flash("Invalid credentials.", 'danger')
             
     return render_template('/users/edit.html', form=form, user=user)
-
-
 
 ################### CHARTS ################### 
 #

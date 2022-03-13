@@ -7,100 +7,99 @@
 <div class="container-fluid pt-5 text-center">
 
     <h2>Billboard's Hot 100</h2>
-    <p><small>Database contains X charts</small></p>
+    <p><small>Database contains {{chart_total}} charts</small></p>
     <hr>
 </div>
 
-<div class="container col col-md-10 col-xl-8">
-    
-	
-        {% for chart in charts.items %}
-    
-            <div class="row text-center col-md-10 col-lg-10">
-                <div class="col col-md-3">
-                    <p>
-                        <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.next_chart(chart.chart_date)}}">
-                            <<
-                        </a></span>
-                    </p> 
-                </div>
-                <div class="col-7 col-md-6 h4">
-                        <a href="/chart/{{ chart.chart_date }}">{{chart.chart_date}}</a>
-                </div>
-                <div class="col col-md-3">
-                    
-                    <p>
-                        <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.prior_chart(chart.chart_date)}}">
-                            >>
-                        </a></span>
-                    </p>
-        
-                </div>
-
-                
-            </div>
-        
-            <div class="row col-md-10 col-lg-10">
-                <div class="container-fluid col-lg-8 ">
-                {% for song, appearance in results[loop.index0] %}
-                    {% if loop.index0 < 5 %}
-                    <div class="row">
-                        <div class="col-3 col-md-2 col-lg-3 col-xl-3">
-                            <img src="{{song.song_img_url}}" height="auto" class="img-fluid mx-auto d-block p-1">
-                        </div>
-                        <div class="col-7 col-md-7">
-                            <div class="row h5">
-                                #{{appearance.rank}} - <a href="/song/{{song.id}}">{{song.title | truncate(20)}}</a>
-                                <form method="POST" 
-                                action="/charts/favorite/{{song.id}}" 
-                                class="float-left" 
-                                name="favorite-form">
-                                <button 
-                                    class="btn p-0 ml-1" 
-                                    type="submit"
-                                    data-bs-toggle="tooltip" 
-                                    data-bs-placement="top" 
-                                    title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
-                                    <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
-                                 </button>
-                             </form> 
-                            </div>
-                            <div class="row">
-                                <small>
-                                    {{song.artist | truncate(25)}} -- 
-
-                                    {% if appearance.last_pos == 0 %}
-                                    Chart Debut!
-                                    {% else %}
-
-                                    Last Week #{{appearance.last_pos}}
-                                    {%endif%}     
-                                </small>
-                            </div>                         
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% if loop.last %}
-                    <a href="/chart/{{appearance.chart_date}}">See Full Chart...</a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            </div>
-            **********************
-     
-                    
-        {% endfor%}    
-        
-               <!-- Pagination -->
-               <div class="text-center container pt-5">
+<div class="container-fluid">
+    <div class="row ">
+        <div class="col-1 row align-items-center ml-3">
+            <!-- Pagination -->
+            <div class="text-center ">
                 <a href="/charts/{{ charts.prev_num }}" 
-                    class="btn btn-outline-dark 
+                    class="btn btn-lg btn-outline-dark 
                     {% if charts.page == 1 %}disabled{% endif %}">
                     &laquo;
                 </a>
-    
+            </div>
+        </div>
+
+        <div class="col-9 ">
+            <div class="container">         
+                {% for chart in charts.items %}  
+                    <div class="row text-center">
+                        <div class="col-3">
+                            <p>
+                                <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.next_chart(chart.chart_date)}}">
+                                    <<
+                                </a></span>
+                            </p> 
+                        </div>
             
-        {% for page_num in charts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}        
+                        <div class="col-6 h4">
+                                <a href="/chart/{{ chart.chart_date }}">{{chart.chart_date}}</a>
+                        </div>
+            
+                        <div class="col-3">            
+                            <p>
+                                <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.prior_chart(chart.chart_date)}}">
+                                    >>
+                                </a></span>
+                            </p>
+                        </div>     
+                    </div>
+                    <div class="row">
+                        <div class="row container-fluid col-lg-8 ">
+                            {% for song, appearance in results[loop.index0] %}
+                                {% if loop.index0 < 5 %}
+                                    <div class="row">
+                                        <div class="col-3 col-md-2 col-lg-3 col-xl-3">
+                                            <img src="{{song.song_img_url}}" height="auto" class="img-fluid mx-auto d-block p-1">
+                                        </div>
+                                        <div class="col-7 col-md-7">
+                                            <div class="row h5">
+                                                #{{appearance.rank}} - <a href="/song/{{song.id}}">{{song.title | truncate(20)}}</a>
+                                                <form method="POST" 
+                                                    action="/charts/favorite/{{song.id}}" 
+                                                    class="float-left" 
+                                                    name="favorite-form">
+
+                                                    <button 
+                                                        class="btn p-0 ml-1" 
+                                                        type="submit"
+                                                        data-bs-toggle="tooltip" 
+                                                        data-bs-placement="top" 
+                                                        title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
+                                                        <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
+                                                    </button>
+                                                </form> 
+                                            </div>
+                                            <div class="row">
+                                                <small>
+                                                    {{song.artist | truncate(25)}} -- 
+
+                                                    {% if appearance.last_pos == 0 %}
+                                                    Chart Debut!
+                                                    {% else %}
+
+                                                    Last Week #{{appearance.last_pos}}
+                                                    {%endif%}     
+                                                </small>
+                                            </div>                         
+                                        </div>
+                            </div>
+                            {% endif %}
+                            {% if loop.last %}
+                                <a href="/chart/{{appearance.chart_date}}">See Full Chart...</a>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                    </div>            
+                {% endfor%}  
+            </div>
+            <div class="row col justify-content-center mx-auto">
+                {% for page_num in charts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}        
                     {% if page_num %}
                         {% if charts.page == page_num %}
                             <a href="/charts/{{page_num}}"
@@ -117,19 +116,22 @@
                         ...
                     {% endif %}
                 {% endfor %}
-    
-                <a href="/charts/{{ charts.next_num }}"
-                class="btn btn-outline-dark 
-                {% if charts.page == charts.pages %}disabled{% endif %}">
-                    &raquo;
-                </a>
-    
-               
-        
             </div>
+        </div>
+        <div class="col-1 row align-items-center mr-3">
+            <a href="/charts/{{ charts.next_num }}"
+            class="btn btn-lg btn-outline-dark 
+            {% if charts.page == charts.pages %}disabled{% endif %}">
+                &raquo;
+            </a>
+        </div>
+    </div>
+</div>
+        
+    
     
 </div>
-
+</div>
 
 
 {% endblock %}

@@ -161,5 +161,6 @@ def get_chart_images(chart_date):
                             URL=URL,
                             soup=srcs,
                             chart_object=chart_object.chart_date,
-                            songs=ranked_song_objects                            
+                            songs=ranked_song_objects, 
+                            img_elements=img_elements                            
                             )

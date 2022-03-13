@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
+from dateutil.relativedelta import relativedelta
 import requests
 
 bcrypt = Bcrypt()
@@ -155,16 +156,29 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.Text, unique=True)
     profile_img_url = db.Column(db.Text, default="/static/media/blank_profile.png")
-    date_of_birth = db.Column(db.DateTime)
+    date_of_birth = db.Column(db.Date)
 
     favorite_songs = db.relationship('Favorite')
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
-    # def list_favorite_songs(self):
-    #     found_song_list = [song.id for song in self.favorite_songs]
-    #     return found_song_list
+    def birth_charts(self, age):
+        """
+            Given a user's birthday and an age input, returns the date for that age.
+        """
+        # birthday_ordinal = self.date_of_birth.toordinal()
+
+        # age_ordinal = age * 365.25
+
+        chart_at_age = self.date_of_birth + relativedelta(years=age)
+
+        if chart_at_age > date.today():
+            chart_at_age = date.today()
+
+        return chart_at_age
+
+
 
     @classmethod
     def signup(cls, username, password, email, profile_img_url, date_of_birth):

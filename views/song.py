@@ -34,15 +34,6 @@ def show_list_of_songs(page=1):
 def show_song_details(song_id):
 
     song = Song.query.get_or_404(song_id)
-    
-    # Check if artist page has been searched for
-    if song.artist_page == "Not Queried":
-        
-        # Check if artist page search turned up empty
-        if song.find_artist_page() != False:
-            
-            # Search for an image
-            song.get_artist_image()
                 
     favorites = [f.song_id for f in g.user.favorite_songs]
         
@@ -80,7 +71,7 @@ def toggle_songs_like(page, song_id):
 
     if not g.user:
         flash("You need to log in to save favorites.", "warning")
-        return redirect("/")
+        return redirect("/login")
 
     favorited_song = Song.query.get_or_404(song_id)
     
@@ -122,7 +113,7 @@ def toggle_song_like(song_id):
 
     if not g.user:
         flash("You need to log in to save favorites.", "warning")
-        return redirect("/")
+        return redirect("/login")
 
     favorited_song = Song.query.get_or_404(song_id)
 

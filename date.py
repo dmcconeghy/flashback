@@ -189,3 +189,12 @@
 #                     </div>
 #                 </div> -->
 
+  # Image handling has been moved to the /chart level. 
+    # # Check if artist page has been searched for
+    # if song.artist_page == "Not Queried":
+        
+    #     # Check if artist page search turned up empty
+    #     if song.find_artist_page() != False:
+            
+    #         # Search for an image
+    #         song.get_artist_image()
