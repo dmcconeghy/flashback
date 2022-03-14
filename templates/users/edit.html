@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container col-lg-10 mx-auto">
+<div class="container-fluid">
+  <div class="row container-fluid justify-content-center">
 
-  <div class="row">
-      <h2 class="join-message">Edit Your Profile.</h2>
-      </div>
-      <div class="row">
+  <div class="row col-12 justify-content-center">
+      <h2 class="text-center">Edit Your Profile</h2>
+  </div>
+
+  <div class="row col-12 ">
+    <div class="col">
       <form method="POST" id="user_form">
         {{ form.hidden_tag() }}
 
@@ -14,10 +17,11 @@
           {% for error in field.errors %}
             <span class="text-danger">{{ error }}</span>
           {% endfor %}
+          <strong>{{field.label.text}}</strong>
           {{ field(placeholder=field.label.text, class="form-control") }}
         {% endfor %}
 
-        <p>To confirm changes, enter your password:</p>
+        <p class="pt-5"><small>To confirm changes, enter your password:</small></p>
         {% if form.password.errors %}
           {% for error in form.password.errors %}
             <span class="text-danger">
@@ -27,13 +31,14 @@
         {% endif %}
         {{ form.password(placeholder="Enter your password to confirm", class="form-control") }}
 
-        <div class="edit-btn-area">
+        <div class="p-1">
           <button class="btn btn-success">Submit Changes</button>
-          <a href="/users/{{ user_id }}" class="btn btn-outline-secondary">Cancel</a>
+          <a href="/users/{{ user_id }}" class="btn btn-danger">Cancel</a>
         </div>
       </form>
     </div>
+</div>
     </div>
   </div>
-
+</div>
 {% endblock %}
