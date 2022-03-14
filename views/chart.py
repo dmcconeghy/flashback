@@ -115,6 +115,11 @@ def show_chart(req_chart_date):
         
     """
 
+    if not g.user:
+        favorites = []
+    else:
+        favorites = [f.song_id for f in g.user.favorite_songs]
+
     chart = Chart.query.filter(Chart.chart_date == req_chart_date).first()
 
     appearances = (
@@ -128,8 +133,6 @@ def show_chart(req_chart_date):
     song_ids = [ra.song_id for ra in appearances]
 
     songs = [Song.query.get(sid) for sid in song_ids]
-
-    favorites = [f.song_id for f in g.user.favorite_songs]
 
     return render_template('charts/chart_results.html', 
                                 chart=chart, 
