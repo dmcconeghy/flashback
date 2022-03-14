@@ -3,72 +3,113 @@
 {% block title %}{{ user.username }}{% endblock %}
 
 {% block content %}
-  <div class="container-fluid col-12">
-    <div class="row user-info pt-4">
-      <div class="col-5 col-md-3 col-lg-2 text-center">
-        <h2>Hello {{ user.username }}</h2>
-      </div>
-    </div>
-  <div class="row"> 
-    <div class="col-5 col-md-3 col-lg-2 text-center ">
-      <img src="{{user.profile_img_url}}" height="auto" class="img-fluid mx-auto d-block">
-      <span ><small><a href="/users/profile">Update your profile</a></small></span>
-    </div>
-    <div class="container row col-7 col-md-9 col-lg-10 justify-content-center">
-      <div class="col-6 col-md-7 col-lg-6 ">
-        {% if user.date_of_birth %}
-          <div>
-            <p><strong>Search for the chart on the week of your:</strong></p>
-            <p><span data-toggle="modal" data-target="#loadingModal"><a href="/search/{{user.date_of_birth}}">Birth</a></span></p>
-            <p><span data-toggle="modal" data-target="#loadingModal"><a href="/search/{{user.birth_charts(6)}}">6th Birthday</a></span></p>
-            <p><span data-toggle="modal" data-target="#loadingModal"><a href="/search/{{user.birth_charts(12)}}">12th Birthday</a></span></p>
-            <p><span data-toggle="modal" data-target="#loadingModal"><a href="/search/{{user.birth_charts(18)}}">18th Birthday</a></span></p>
-            <p><span data-toggle="modal" data-target="#loadingModal"><a href="/search/{{user.birth_charts(24)}}">24th Birthday</a></span></p>
-          </div>    
-        {% else %}
-        <span>
-          <p class="text-center text-sm-left">A birthday is required for age-based chart suggestions</p>
-          <p><a href="/users/profile">Add one to your profile?</a></p>
-        </span>
- 
 
-        {% endif %}
-      
+<div class="wrapper container-fluid m-0 p-0">
+  <div class="profile-img d-flex flex-row mt-3">
+    <div class="col-4 text-center">
+      <a href="/users/profile">
+        <img src="{{user.profile_img_url}}" height="auto" class="img-fluid mx-auto d-block text-decoration-none">
+        <span>
+          <small>Update profile</small>
+        </span>
+      </a>
+    </div>
+    <div class="col-8 text-center pt-md-5" >
+      <div class="row">
+        <span class="h2">Welcome, {{ user.username }}!</span>
       </div>
-      <div class="col-2 col-md-3 col-lg-4"></div>
+      <div class="row">
+        <div class="birthday d-flex flex-row mt-2">
+          <div class="col-12 mx-auto ">
+            {% if user.date_of_birth %}
+              <div class="container-fluid mx-auto">
+                <div class="row justify-content-center">
+                  
+                    <div class="dropdown">
+                      
+                      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                        Hot 100 Birthday Charts:
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <span data-toggle="modal" data-target="#loadingModal"><a class="dropdown-item" href="/search/{{user.date_of_birth}}">Birth</a></span>  
+                        <span data-toggle="modal" data-target="#loadingModal"><a class="dropdown-item" href="/search/{{user.birth_charts(6)}}">6th Birthday</a></span>
+                        <span data-toggle="modal" data-target="#loadingModal"><a class="dropdown-item" href="/search/{{user.birth_charts(12)}}">12th Birthday</a></span>
+                        <span data-toggle="modal" data-target="#loadingModal"><a class="dropdown-item" href="/search/{{user.birth_charts(18)}}">18th Birthday</a></span>
+                        <span data-toggle="modal" data-target="#loadingModal"><a class="dropdown-item" href="/search/{{user.birth_charts(24)}}">24th Birthday</a></span>
+                      </div>
+                    </div>
+                
+                </div>
+              </div>
+            {% else %}
+      
+            <div class="container-fluid mx-auto">
+              <div class="container  mx-auto">
+                <div class="d-flex justify-content-center  pt-2">
+                  <svg class="text-muted flex-shrink-0 mr-4" width="3em" height="3em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M352 111.1c22.09 0 40-17.88 40-39.97S352 0 352 0s-40 49.91-40 72S329.9 111.1 352 111.1zM224 111.1c22.09 0 40-17.88 40-39.97S224 0 224 0S184 49.91 184 72S201.9 111.1 224 111.1zM383.1 223.1L384 160c0-8.836-7.164-16-16-16h-32C327.2 144 320 151.2 320 160v64h-64V160c0-8.836-7.164-16-16-16h-32C199.2 144 192 151.2 192 160v64H128V160c0-8.836-7.164-16-16-16h-32C71.16 144 64 151.2 64 160v63.97c-35.35 0-64 28.65-64 63.1v68.7c9.814 6.102 21.39 11.33 32 11.33c20.64 0 45.05-19.73 52.7-27.33c6.25-6.219 16.34-6.219 22.59 0C114.1 348.3 139.4 367.1 160 367.1s45.05-19.73 52.7-27.33c6.25-6.219 16.34-6.219 22.59 0C242.1 348.3 267.4 367.1 288 367.1s45.05-19.73 52.7-27.33c6.25-6.219 16.34-6.219 22.59 0C370.1 348.3 395.4 367.1 416 367.1c10.61 0 22.19-5.227 32-11.33V287.1C448 252.6 419.3 223.1 383.1 223.1zM352 373.3c-13.75 10.95-38.03 26.66-64 26.66s-50.25-15.7-64-26.66c-13.75 10.95-38.03 26.66-64 26.66s-50.25-15.7-64-26.66c-13.75 10.95-38.03 26.66-64 26.66c-11.27 0-22.09-3.121-32-7.377v87.38C0 497.7 14.33 512 32 512h384c17.67 0 32-14.33 32-32v-87.38c-9.91 4.256-20.73 7.377-32 7.377C390 399.1 365.8 384.3 352 373.3zM96 111.1c22.09 0 40-17.88 40-39.97S96 0 96 0S56 49.91 56 72S73.91 111.1 96 111.1z"/></svg>
+                </div>
+      
+                <div class="d-flex justify-content-center pt-2">
+                    <div class="h6 fw-bold">Want birthday charts?</div>
+                </div>
+              
+              <div class="d-flex justify-content-center pt-2">         
+                  
+                    <span>
+                      <a class="btn btn-small btn-block-xs btn-block-sm btn-primary" 
+                        href="/users/profile">
+                        Add your birthday!
+                      </a> 
+                    </span>  
+        
+              </div>
+            </div>  
+                  
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+  
+
+
+</div>
+
+
   <div class="row">
     
-    <div class="col-12 col-md-10 col-lg-9 container ml-0 pl-2">
-      <div class="row favorite-song-label col">
+    <div class="col-12 col-md-10 col-lg-9 ml-0 pl-2">
+      <div class="d-flex row favorite-song-label col">
         {% if favorites %}
         <div class="h4 col container pt-4 pl-5 text-left">Your {{favorites | length}} favorite songs:</div>
         {% else %}
         <div class="h4 col container pt-4 pl-5 text-left">No favorite songs added yet</div>
         {% endif %}
       </div>
-      <div class="row">
-        <div class="col col-md-2 col-lg-1"></div>
-        <div class="container-fluid col-md-6 col-lg-6 ">
+      <div class="d-flex row ml-3">
+        
+        <div class="container-fluid col-offset-1 col-md-6 col-lg-6 ">
           <ul> 
               {% for song in songs %}
-              <div class="row col">
+              <div class="row">
                 <li>
                   <span>
-                  <a href="/song/{{song.id}}" class="h6">{{song.title}}</a> by {{song.artist | truncate(25)}}
+                  <a href="/song/{{song.id}}" class="h6">{{song.title | truncate(20)}}</a> by {{song.artist | truncate(20)}}
                     <form method="POST" 
                       action="/users/{{user.id}}/removefavorite/{{song.id}}" 
                       class="float-right" 
                       name="favorite-form">
 
                       <button 
-                        class="btn btn-sm text-danger p-0 ml-1"
+                        class="btn btn-sm text-danger p-0 ml-1 text-end"
                         data-bs-toggle="tooltip" 
                         data-bs-placement="top" 
                         title="Remove from favorites" 
                         type="submit">
-                          X
+                          <strong>X</strong>
                       </button>
                     
                     </form>
@@ -80,7 +121,7 @@
           </ul>
         
         </div>
-        <div class="col-md col-lg-5">
+        <div class="row col-md mx-auto ml-3">
          
           <form name="form" id="form" method="POST">
               {{ form.hidden_tag() }}
