@@ -33,12 +33,22 @@
 
         <div class="p-1">
           <button class="btn btn-success">Submit Changes</button>
-          <a href="/users/{{ user_id }}" class="btn btn-danger">Cancel</a>
+          <a href="/users/{{ user.id }}" class="btn btn-danger">Cancel</a>
         </div>
       </form>
     </div>
-</div>
+  </div>
+  <div class="row container-fluid justify-content-center">
+    <div class="col pt-5">
+      <p>Deleted profiles can <strong>not</strong> be recovered.</p>
+      <form method="POST">
+        <button class="btn btn-danger" action="/users/delete">
+          Delete your profile? 
+        </button>
+      </form>
     </div>
   </div>
 </div>
+</div>
+
 {% endblock %}

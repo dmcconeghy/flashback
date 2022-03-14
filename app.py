@@ -246,8 +246,24 @@ def update_profile():
             return redirect(f"/users/{user.id}")
         
         flash("Invalid credentials.", 'danger')
-            
+           
     return render_template('/users/edit.html', form=form, user=user)
+
+################### UPDATE USER PROFILE ###################
+
+@app.route('/users/delete', methods=['POST'])
+def delete_profile():
+
+    if not g.user:
+        flash("Access unauthorized", "danger")
+        return redirect('/')
+    
+    do_logout()
+
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect('/')
 
 ################### CHARTS ################### 
 #
