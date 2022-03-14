@@ -5,14 +5,15 @@
 {% block content %}
 
 <div class="container-fluid pt-5 text-center">
-
-    <h2>Billboard's Hot 100</h2>
-    <p><small>Database contains {{chart_total}} charts</small></p>
-    <hr>
+    <div class="col mx-auto">
+        <h2>Billboard's Hot 100</h2>
+        <p><small>Database contains {{chart_total}} charts</small></p>
+        <hr>
+    </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row ">
+<div class="content container">
+    <div class="row col-12 container">
         <div class="col-1 row align-items-center ml-3">
             <!-- Pagination -->
             <div class="text-center ">
@@ -24,7 +25,7 @@
             </div>
         </div>
 
-        <div class="col-9 ">
+        <div class="col-8">
             <div class="container">         
                 {% for chart in charts.items %}  
                     <div class="row text-center">
@@ -48,11 +49,11 @@
                             </p>
                         </div>     
                     </div>
-                    <div class="row">
-                        <div class="row container-fluid col-lg-8 ">
+                    <div class="row container col-10 offset-1">
+                        
                             {% for song, appearance in results[loop.index0] %}
                                 {% if loop.index0 < 5 %}
-                                    <div class="row">
+                                    <div class="row container">
                                         <div class="col-3 col-md-2 col-lg-3 col-xl-3">
                                             <img src="{{song.song_img_url}}" height="auto" class="img-fluid mx-auto d-block p-1">
                                         </div>
@@ -87,13 +88,17 @@
                                                 </small>
                                             </div>                         
                                         </div>
-                            </div>
+                                    </div>
                             {% endif %}
                             {% if loop.last %}
-                                <a href="/chart/{{appearance.chart_date}}">See Full Chart...</a>
+                            <div class="row col justify-content-center">
+                                <div class="col">
+                                <p class="text-center"><a  href="/chart/{{appearance.chart_date}}">See Full Chart...</a></p>
+                                </div>
+                            </div>
                             {% endif %}
                             {% endfor %}
-                        </div>
+                            
                         
                     </div>            
                 {% endfor%}  
@@ -118,6 +123,7 @@
                 {% endfor %}
             </div>
         </div>
+
         <div class="col-1 row align-items-center mr-3">
             <a href="/charts/{{ charts.next_num }}"
             class="btn btn-lg btn-outline-dark 
