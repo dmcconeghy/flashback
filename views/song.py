@@ -35,7 +35,10 @@ def show_song_details(song_id):
 
     song = Song.query.get_or_404(song_id)
                 
-    favorites = [f.song_id for f in g.user.favorite_songs]
+    if not g.user:
+        favorites = []
+    else:
+        favorites = [f.song_id for f in g.user.favorite_songs]
         
     appearances = ChartAppearance.query.filter(ChartAppearance.song_id == song_id).all()
     
