@@ -1,80 +1,130 @@
 <!DOCTYPE html>
 
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>FLASHBACK - {% block title %}{% endblock %}</title>
 
-  <title>
-    FLASHBACK - {% block title %}{% endblock %}
-  </title> 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link href="/static/css/styles.css" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/b13fa23951.js" crossorigin="anonymous"></script>
-  
-  
-</head>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link href="/static/css/styles.css" rel="stylesheet" />
 
-<header class="p-3 text-white bg-dark">
-  <div class="navbar navbar-expand-md navbar-dark">
-    <a href="/" class="d-flex fs-4 mb-2 mb-lg-0  text-decoration-none">
-      <span class="text-warning">FLASH</span><span class="text-white">BACK</span>
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-  <div class="container ">
-    <div class="d-flex align-items-center justify-content-center justify-content-lg-start">
-     
+    <script
+      src="https://kit.fontawesome.com/b13fa23951.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
 
-      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="/features" class="nav-link ps-5 pe-2 text-warning">Features</a></li>
-        <li><a href="/about" class="nav-link ps-2 text-warning">About</a></li>
-        <li><a href="/search" class="nav-link ps-2 text-warning">Search</a></li>
-        <li><span data-toggle="modal" data-target="#loadingModal"><a href="/charts" class="nav-link ps-2 text-warning" >Charts</a></span></li>
-        <li><span data-toggle="modal" data-target="#loadingModal"><a href="/songs" class="nav-link ps-2 pe-5 text-warning">Songs</a></span></li>
-      </ul>
-
-      <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-        <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search">
-      </form> -->
-
-      <div class="text-end">
-        <!-- This isn't working as intended -->
-        {% if not g.user %}
-        <a class="btn btn-outline-light" href="/login">Login</a>
-        <a class="btn btn-warning" href="/signup">Sign-up</a>
-        <a class="" href="/users/{{ g.user.username }}">
-          <img src="{{ g.user.profile_image_url }}" alt="{{ g.user.username }}">
+  <header class="text-white bg-dark">
+    <div class="navbar navbar-expand-md navbar-dark">
+      <div class="ml-3">
+        <a href="/" class="text-decoration-none">
+          <span class="h5 text-warning">FLASH</span
+          ><span class="h5 text-white">BACK</span>
         </a>
-        
-        {% else %}
-        <a class="" href="/users/{{ g.user.id }}">
-          <img src="{{ g.user.profile_img_url }}" alt="{{ g.user.username }}" width="38" height="38" class="rounded">
-        </a>
-        <a class="btn btn-warning" href="/logout">Log Out</a>
-        {% endif %}
+      </div>
+      <div class="mr-3">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="container justify-content-center flex-row ">
+          <div class="d-flex container flex-md-row flex-column flex-column-sm ">
+            <div class="d-flex container flex-column flex-md-row align-items-center">
+              <div class="d-flex justify-content-center nav bd-highlight mb-3">
+                <a href="/features" class="nav-link ps-5 pe-2 text-warning"
+                  >Features</a
+                >
+              </div>
+              <div class="d-flex justify-content-center nav bd-highlight mb-3">
+                <a href="/about" class="nav-link ps-2 text-warning">About</a>
+              </div>
+              <div class="d-flex justify-content-center nav bd-highlight mb-3">
+                <a href="/search" class="nav-link ps-2 text-warning">Search</a>
+              </div>
+              <div class="d-flex justify-content-center nav bd-highlight mb-3">
+                <span data-toggle="modal" data-target="#loadingModal">
+                  <a href="/charts" class="nav-link ps-2 text-warning">Charts</a>
+                </span>
+              </div>
+
+              <div class="d-flex justify-content-center nav bd-highlight mb-3">
+                <span data-toggle="modal" data-target="#loadingModal">
+                  <a href="/songs" class="nav-link ps-2 pe-5 text-warning">Songs</a>
+                </span>
+              </div>
+            </div>   
+          
+            <div class="d-flex justify-content-center align-items-center m-1 p-1">
+              {% if not g.user %}
+              <a class="btn btn-outline-light" href="/login">Login</a>
+              <a class="btn btn-warning" href="/signup">Sign&#8209up</a>
+              <a class="" href="/users/{{ g.user.username }}">
+                <img
+                  src="{{ g.user.profile_image_url }}"
+                  alt="{{ g.user.username }}"
+                />
+              </a>
+
+              {% else %}
+              <a class="" href="/users/{{ g.user.id }}">
+                <img
+                  src="{{ g.user.profile_img_url }}"
+                  alt="{{ g.user.username }}"
+                  width="38"
+                  height="38"
+                  class="rounded"
+                />
+              </a>
+              <a class="btn btn-warning" href="/logout">Log Out</a>
+              {% endif %}
+            </div>
+          </div>
+          
+
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-  </div>
-</header>
-<body>
+  </header>
+  <body>
+    {% for category, msg in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{category}}">{{ msg }}</div>
+    {% endfor %} {% block content %}{% endblock %} {% include 'loading.html' %}
 
-  {% for category, msg in get_flashed_messages(with_categories=True) %}
-  <div class="alert alert-{{category}}">{{ msg }}</div>
-  {% endfor %}
-
-  {% block content %}{% endblock %}
-  {% include 'loading.html' %} 
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script src="../static/js/app.js"></script>
-</body>
-
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script src="../static/js/app.js"></script>
+  </body>
 </html>
