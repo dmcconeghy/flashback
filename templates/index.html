@@ -3,24 +3,64 @@
 {% block title %} INDEX {% endblock %}
 {% block content %}
 
-<div class="div container">
+<div class="container-fluid px-4 py-5" id="flashback-features">
 
-    <h1>Welcome</h1>
+    <h2 class="pb-3 border-bottom">Welcome to Flashback!</h2>
+    <p class="lead"> Explore the Billboard Charts</p>
 
-    <h3>Convenience links for site routes:</h3>
+    <div class="row row-cols-1 row-cols-lg-4 g-4 py-5">
 
-    <h5><a href="/search">SEARCH</a></h5>: Basic search page
-    <h5><span data-toggle="modal" data-target="#loadingModal"><a href="/random">RANDOM</a></span></h5>: Returns a random chart result
+        <div class="col-12 col-md d-flex align-items-start">
+        
+        <svg class="bi text-muted flex-shrink-0 mr-4" 
+        width="2em" height="2em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+        <!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M160 32V64H288V32C288 14.33 302.3 0 320 0C337.7 0 352 14.33 352 32V64H400C426.5 64 448 85.49 448 112V160H0V112C0 85.49 21.49 64 48 64H96V32C96 14.33 110.3 0 128 0C145.7 0 160 14.33 160 32zM0 192H448V464C448 490.5 426.5 512 400 512H48C21.49 512 0 490.5 0 464V192zM64 304C64 312.8 71.16 320 80 320H112C120.8 320 128 312.8 128 304V272C128 263.2 120.8 256 112 256H80C71.16 256 64 263.2 64 272V304zM192 304C192 312.8 199.2 320 208 320H240C248.8 320 256 312.8 256 304V272C256 263.2 248.8 256 240 256H208C199.2 256 192 263.2 192 272V304zM336 256C327.2 256 320 263.2 320 272V304C320 312.8 327.2 320 336 320H368C376.8 320 384 312.8 384 304V272C384 263.2 376.8 256 368 256H336zM64 432C64 440.8 71.16 448 80 448H112C120.8 448 128 440.8 128 432V400C128 391.2 120.8 384 112 384H80C71.16 384 64 391.2 64 400V432zM208 384C199.2 384 192 391.2 192 400V432C192 440.8 199.2 448 208 448H240C248.8 448 256 440.8 256 432V400C256 391.2 248.8 384 240 384H208zM320 432C320 440.8 327.2 448 336 448H368C376.8 448 384 440.8 384 432V400C384 391.2 376.8 384 368 384H336C327.2 384 320 391.2 320 400V432z"/></svg> 
+        <div>
+            <h4 class="fw-bold mb-2">Billboard Charts</h4>
+            <p>See any 'Hot 100' Billboard chart since August 1958. 
+                Browse charts by date or see a specific chart's entries.</p>
+            
+        </div>
+        </div>
+        <div class="col-12 col-md d-flex align-items-start">
+        <svg class="bi text-muted flex-shrink-0 mr-4" 
+        width="2em" height="2em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M511.1 367.1c0 44.18-42.98 80-95.1 80s-95.1-35.82-95.1-79.1c0-44.18 42.98-79.1 95.1-79.1c11.28 0 21.95 1.92 32.01 4.898V148.1L192 224l-.0023 208.1C191.1 476.2 149 512 95.1 512S0 476.2 0 432c0-44.18 42.98-79.1 95.1-79.1c11.28 0 21.95 1.92 32 4.898V126.5c0-12.97 10.06-26.63 22.41-30.52l319.1-94.49C472.1 .6615 477.3 0 480 0c17.66 0 31.97 14.34 32 31.99L511.1 367.1z"/></svg>
+        <div>
+            <h4 class="fw-bold mb-2">Detailed Song Pages</h4>
+            <p>See details for each song's appearances on the 
+                charts.</p>
+            
+        </div>
+        </div>
+
+        <div class="col-12 col-md d-flex align-items-start">
+        <svg class="bi text-muted flex-shrink-0 mr-4" width="2em" height="2em" 
+        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+        <!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M381.2 150.3L524.9 171.5C536.8 173.2 546.8 181.6 550.6 193.1C554.4 204.7 551.3 217.3 542.7 225.9L438.5 328.1L463.1 474.7C465.1 486.7 460.2 498.9 450.2 506C440.3 513.1 427.2 514 416.5 508.3L288.1 439.8L159.8 508.3C149 514 135.9 513.1 126 506C116.1 498.9 111.1 486.7 113.2 474.7L137.8 328.1L33.58 225.9C24.97 217.3 21.91 204.7 25.69 193.1C29.46 181.6 39.43 173.2 51.42 171.5L195 150.3L259.4 17.97C264.7 6.954 275.9-.0391 288.1-.0391C300.4-.0391 311.6 6.954 316.9 17.97L381.2 150.3z"/></svg>
+        <div>
+            <h4 class="fw-bold mb-2">User Favorites</h4>
+            <p>Save your favorite hits to your <a href="/user">profile.</a> 
+            Add or remove them anywhere from any chart or song page.</p>
+           
+        </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 py-5">
+        <div class="col d-flex align-items-start justify-content-center">
+        <svg class="bi text-muted flex-shrink-0 mr-4" width="2em" height="2em" 
+        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M424.1 287c-15.13-15.12-40.1-4.426-40.1 16.97V352H336L153.6 108.8C147.6 100.8 138.1 96 128 96H32C14.31 96 0 110.3 0 128s14.31 32 32 32h80l182.4 243.2C300.4 411.3 309.9 416 320 416h63.97v47.94c0 21.39 25.86 32.12 40.99 17l79.1-79.98c9.387-9.387 9.387-24.59 0-33.97L424.1 287zM336 160h47.97v48.03c0 21.39 25.87 32.09 40.1 16.97l79.1-79.98c9.387-9.391 9.385-24.59-.0013-33.97l-79.1-79.98c-15.13-15.12-40.99-4.391-40.99 17V96H320c-10.06 0-19.56 4.75-25.59 12.81L254 162.7L293.1 216L336 160zM112 352H32c-17.69 0-32 14.31-32 32s14.31 32 32 32h96c10.06 0 19.56-4.75 25.59-12.81l40.4-53.87L154 296L112 352z"/></svg>
+        <div>
+            <h4 class="fw-bold mb-2">Start with a Random Chart</h4>
+            <p class="text-center p-3">
+                <a class="btn btn-large btn-primary" href="/random" >Search now!</a> </p>
+        </div>
+        </div>
+        
+    </div>
     
-    <h5><span data-toggle="modal" data-target="#loadingModal"><a href="/charts">CHARTS</a></span></h5>: Lists all charts currently in database
-    <h5><span data-toggle="modal" data-target="#loadingModal"><a href="/songs">SONGS</a></span></h5>: Lists all songs currently in database
-    <h5><span data-toggle="modal" data-target="#loadingModal"><a href="/songs/gallery" >CAROUSEL</a></span></h5>: A Boostrap carousel prototype for showing songs/chart results in cards.
-    <h5><a href="/listing">LIST</a></h5>: Jukebox styled list prototype
-
-    Convenience links for user features:
-    <h5><a href="/login">LOGIN</a></h5>
-    <h5><a href="/signup">SIGNUP</a></h5>
-    <h5><a href="/logout">LOGOUT</a></h5>
-
 </div>
+
 {% endblock %}
