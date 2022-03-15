@@ -2,10 +2,9 @@
 
 {% block title %} TEST {% endblock %}
 
-
 {% block content %} 
 <div class="container-fluid col-sm-12 col-md-10 col-lg-10 col-xl-8 col-xxl-6">
-    <h1>The {{chart.name}} on {{chart.chart_date}} </h1>
+    <h1>The Hot 100 on {{chart.chart_date.strftime("%B %d, %Y")}} </h1>
 	<div class="row bg-info">
 		<div class="col-sm-9"> THIS WEEK {{chart.date}}
 		</div>
@@ -39,7 +38,7 @@
                                     <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
                                  </button>
                              </form>
-                {{song.title | truncate(25)}} by {{song.artist | truncate(30)}}
+                {{(song.title) | truncate(20) }} by {{song.artist | truncate(25) }}
                 
             </div>
             <div class="col-sm-1 text-center"> {{appearance.last_pos}}

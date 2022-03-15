@@ -287,7 +287,7 @@ app.add_url_rule('/charts', view_func=chart.show_list_of_charts, methods=['GET',
 app.add_url_rule('/charts/<int:page>', view_func=chart.show_list_of_charts, methods=['GET', 'POST'])
 app.add_url_rule('/chart/<string:req_chart_date>', view_func=chart.show_chart, methods=['GET', 'POST'])
 app.add_url_rule('/chart/<string:chart_date>/favorite/<int:song_id>', view_func=chart.show_chart_favorites, methods=['POST'])
-app.add_url_rule('/charts/favorite/<int:song_id>', view_func=chart.show_list_of_charts_favorites, methods=['POST'])
+app.add_url_rule('/charts/<int:page>/favorite/<int:song_id>', view_func=chart.show_list_of_charts_favorites, methods=['POST'])
 ################### SONG/S ################### 
 #
 #   See song.py for

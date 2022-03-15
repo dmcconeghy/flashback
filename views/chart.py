@@ -56,7 +56,7 @@ def show_list_of_charts(page=1):
                                 favorites=favorites, 
                                 chart_total=chart_total)
 
-def show_list_of_charts_favorites(song_id):
+def show_list_of_charts_favorites(page, song_id):
     """Toggles a favorite song from the chart list to the user's favorites list"""
 
     if not g.user:
@@ -84,7 +84,7 @@ def show_list_of_charts_favorites(song_id):
         removed_favorite = Song.query.get_or_404(favorited_song.id)
 
         flash(f"{removed_favorite.artist}'s {removed_favorite.title} removed from your favorites", "warning")
-        return redirect(f"/charts")
+        return redirect(f"/charts/{page}")
     else:
         add_favorite = Favorite(
             user_id = g.user.id, 
@@ -96,7 +96,7 @@ def show_list_of_charts_favorites(song_id):
         added_favorite = Song.query.get_or_404(favorited_song.id)
         flash(f"Added {added_favorite.artist}'s {added_favorite.title} to your favorites", "success")
 
-    return redirect(f"/charts")
+    return redirect(f"/charts/{page}")
 
 def show_chart(req_chart_date):
     """ 
