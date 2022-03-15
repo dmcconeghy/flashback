@@ -156,13 +156,30 @@ html {
   width: 290px;
 }
 
-.artist-image{
-  object-fit: scale-down;
-  height:80px;
-  Width:80px
-}
 
-.chart-rank{
+.track-rank {
   background-color: black;
   color: white;
+  text-align: center;
+  vertical-align: middle;
 }
+
+.track-art {
+  vertical-align: top;
+}
+
+.track-details {
+  font-size: .8rem;
+  padding-left: 5%;
+}
+
+.left-sidebar, .right-sidebar {
+  text-align: center;
+  vertical-align: middle;
+  
+}
+
+#date-search-form {
+  border: none;
+}
+

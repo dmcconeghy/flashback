@@ -4,140 +4,135 @@
 
 {% block content %}
 
-<div class="container-fluid pt-5 text-center">
+<div class="container-fluid text-center pt-1">
     <div class="col mx-auto">
-        <h2>Billboard's Hot 100</h2>
+        <h3>Billboard's Hot 100</h3>
         <p><small>Database contains {{chart_total}} charts</small></p>
-        <hr>
     </div>
 </div>
 
-<div class="content container">
-    <div class="row col-12 container">
-        <div class="col-1 row align-items-center ml-3">
-            <!-- Pagination -->
-            <div class="text-center ">
-                <a href="/charts/{{ charts.prev_num }}" 
-                    class="btn btn-lg btn-outline-dark 
-                    {% if charts.page == 1 %}disabled{% endif %}">
-                    &laquo;
-                </a>
+{% for chart in charts.items %} 
+    <div class="container ">
+        <div class="chart-date row text-center">
+           
+            <div class="col-12 h6">
+                    <a href="/chart/{{ chart.chart_date }}">Week of {{chart.chart_date.strftime("%B %d, %Y")}}</a>
             </div>
+     
         </div>
+        <div class="wrapper row ">
+            <div class="col-1 bg-secondary container d-flex flex-column justify-content-center p-1">
+                <div class="left-sidebar">
+                    <a href="/charts/{{ charts.prev_num }}" 
+                        class="h2 text-white"
+                        {% if charts.page == 1 %}style="pointer-events:none"{% endif %}>
+                        &laquo;
+                    </a>
+                </div>      
+                      
+            </div>
+            <div class="center col-10 container ">
+                <div class="content justify-content-center"> 
+                    <div class="row">
+                        
+                        <table class="chart-table" style="width:100%">
+                            <tbody>
+                            {% for song, appearance in results[loop.index0] %}    
+                                <tr>
+                                    <td class="track-rank h2" style="width:10%"  rowspan="2">{{appearance.rank}}</td>
+                                    <td class="track-art" style="width:20%" rowspan="2">
+                                        <img class="img-fluid" src="{{song.song_img_url}}" />
+                                        </td>
+                                    <td class="track-details" style="width:60%">
+                                        <p>
+                                            {{song.title | truncate(40)}}    
+                                        </p>
+                                    </td>
+                                    <td style="width:10%">
+                                        <form method="POST" 
+                                            action="/charts/favorite/{{song.id}}"
+                                            class="position-relative" 
+                                            name="favorite-form">
 
-        <div class="col-8">
-            <div class="container">         
-                {% for chart in charts.items %}  
-                    <div class="row text-center">
-                        <div class="col-3">
-                            <p>
-                                <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.next_chart(chart.chart_date)}}">
-                                    <<
-                                </a></span>
-                            </p> 
-                        </div>
-            
-                        <div class="col-6 h4">
-                                <a href="/chart/{{ chart.chart_date }}">{{chart.chart_date}}</a>
-                        </div>
-            
-                        <div class="col-3">            
-                            <p>
-                                <span data-toggle="modal" data-target="#loadingModal"><a href="/exists/{{chart.prior_chart(chart.chart_date)}}">
-                                    >>
-                                </a></span>
-                            </p>
-                        </div>     
+                                            <button 
+                                                class="btn p-0 ml-1 " 
+                                                type="submit"
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
+                                                <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <td class="track-details">
+                                        <p>
+                                            {{song.artist | truncate(20)}}    
+                                        </p>
+                                        
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
+                               
+                            {%endfor%}
+                            </tbody>
+                        </table>                                                     
                     </div>
-                    <div class="row container col-10 offset-1">
-                        
-                            {% for song, appearance in results[loop.index0] %}
-                                {% if loop.index0 < 5 %}
-                                    <div class="row container">
-                                        <div class="col-3 col-md-2 col-lg-3 col-xl-3">
-                                            <img src="{{song.song_img_url}}" height="auto" class="img-fluid mx-auto d-block p-1">
-                                        </div>
-                                        <div class="col-7 col-md-7">
-                                            <div class="row h5">
-                                                #{{appearance.rank}} - <a href="/song/{{song.id}}">{{song.title | truncate(20)}}</a>
-                                                <form method="POST" 
-                                                    action="/charts/favorite/{{song.id}}" 
-                                                    class="float-left" 
-                                                    name="favorite-form">
-
-                                                    <button 
-                                                        class="btn p-0 ml-1" 
-                                                        type="submit"
-                                                        data-bs-toggle="tooltip" 
-                                                        data-bs-placement="top" 
-                                                        title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
-                                                        <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
-                                                    </button>
-                                                </form> 
-                                            </div>
-                                            <div class="row">
-                                                <small>
-                                                    {{song.artist | truncate(25)}} -- 
-
-                                                    {% if appearance.last_pos == 0 %}
-                                                    Chart Debut!
-                                                    {% else %}
-
-                                                    Last Week #{{appearance.last_pos}}
-                                                    {%endif%}     
-                                                </small>
-                                            </div>                         
-                                        </div>
-                                    </div>
-                            {% endif %}
-                            {% if loop.last %}
-                            <div class="row col justify-content-center">
-                                <div class="col">
-                                <p class="text-center"><a  href="/chart/{{appearance.chart_date}}">See Full Chart...</a></p>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% endfor %}
-                            
-                        
-                    </div>            
-                {% endfor%}  
+                </div>
             </div>
-            <div class="row col justify-content-center mx-auto">
-                {% for page_num in charts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}        
-                    {% if page_num %}
-                        {% if charts.page == page_num %}
-                            <a href="/charts/{{page_num}}"
-                            class="btn btn-dark">
-                                {{ page_num }}
-                            </a>
-                        {% else %}
-                            <a href="/charts/{{page_num}}"
-                            class="btn btn-outline-dark">
-                                {{ page_num }}
-                            </a>
-                        {% endif %}
-                    {% else %}
-                        ...
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
 
-        <div class="col-1 row align-items-center mr-3">
-            <a href="/charts/{{ charts.next_num }}"
-            class="btn btn-lg btn-outline-dark 
-            {% if charts.page == charts.pages %}disabled{% endif %}">
-                &raquo;
-            </a>
-        </div>
+            <div class="col-1 bg-secondary container d-flex flex-column justify-content-center p-1">
+                <div class="right-sidebar ">
+                    
+                    <a href="/charts/{{ charts.next_num }}" 
+                        class="h2 text-white"
+                        {% if charts.page == charts.pages %}style="pointer-events: none"{% endif %}
+                        >&raquo;
+                        </a>
+                    
+                    
+                </div>
+            </div>
     </div>
 </div>
-        
+{% endfor%} 
+<hr> 
+<div class="row col justify-content-center mx-auto">
     
+    <a href="/charts/{{ charts.prev_num }}" 
+        class="btn btn-lg btn-outline-dark 
+        {% if charts.page == 1 %}disabled{% endif %}">
+        &laquo;
+    </a>
     
-</div>
-</div>
+    {% for page_num in charts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}        
+        {% if page_num %}
+            {% if charts.page == page_num %}
+                <a href="/charts/{{page_num}}"
+                class="btn btn-dark">
+                    {{ page_num }}
+                </a>
+            {% else %}
+                <a href="/charts/{{page_num}}"
+                class="btn btn-outline-dark">
+                    {{ page_num }}
+                </a>
+            {% endif %}
+        {% else %}
+            <p class="h4">...</p>
+        {% endif %}
+    {% endfor %}
 
+  
+    <a href="/charts/{{ charts.next_num }}"
+    class="btn btn-lg btn-outline-dark 
+    {% if charts.page == charts.pages %}disabled{% endif %}">
+        &raquo;
+    </a>
+    
+</div>
 
 {% endblock %}
