@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import and_
 
 from models import db, connect_db, User, Song, Favorite
-from forms import SignupForm, LoginForm, NewSongForFavoriteList, UpdateProfile, BirthdayUpdateForm
+from forms import SignupForm, LoginForm, NewSongForFavoriteList, UpdateProfile, DeleteProfileForm
 import views.chart as chart
 import views.song as song
 import views.search as search
@@ -251,19 +251,30 @@ def update_profile():
 
 ################### UPDATE USER PROFILE ###################
 
-@app.route('/users/delete', methods=['POST'])
+@app.route('/users/delete', methods=['GET','POST'])
 def delete_profile():
 
     if not g.user:
-        flash("Access unauthorized", "danger")
-        return redirect('/')
-    
-    do_logout()
+            flash("Access Unauthorized. Please Log in", "danger")
+            return redirect('/') 
 
-    db.session.delete(g.user)
-    db.session.commit()
+    user=g.user
 
-    return redirect('/')
+    form = DeleteProfileForm(obj=user)
+
+    if form.validate_on_submit():
+        if User.authenticate(user.username, form.password.data):
+
+            do_logout()
+
+            db.session.delete(user)
+            db.session.commit()
+            flash("Profile Deleted.", "success")
+            return redirect('/')
+
+        flash("Invalid credentials.", 'danger')
+
+    return render_template('/users/delete.html', form=form)
 
 ################### CHARTS ################### 
 #

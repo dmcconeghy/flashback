@@ -40,3 +40,9 @@ class BirthdayUpdateForm(FlaskForm):
     """Form for updating just a user's birthday when it is missing from their profile"""
 
     date_of_birth = DateField("Date of Birth", validators=[Optional()])
+
+class DeleteProfileForm(FlaskForm):
+    """ Delete your profile"""
+
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])

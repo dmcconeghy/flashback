@@ -154,11 +154,11 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.Text, unique=True)
+    email = db.Column(db.Text, nullable=True)
     profile_img_url = db.Column(db.Text, default="/static/media/blank_profile.png")
     date_of_birth = db.Column(db.Date)
 
-    favorite_songs = db.relationship('Favorite')
+    favorite_songs = db.relationship('Favorite', cascade='all, delete', passive_deletes=True)
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
