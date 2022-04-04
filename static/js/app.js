@@ -1,40 +1,38 @@
-console.log("JS is here.")
+// This experimental function has been deprecated in v1 awaiting further bug fixes. 
 
+// function turnPage(){
+//     leftTracks = document.getElementById('tracks-left')
+//     rightTracks = document.getElementById('tracks-right')
 
-
-function turnPage(){
-    leftTracks = document.getElementById('tracks-left')
-    rightTracks = document.getElementById('tracks-right')
-
-    leftTracksClick = document.getElementById('tracks-left-click')
-    rightTracksClick = document.getElementById('tracks-right-click')
+//     leftTracksClick = document.getElementById('tracks-left-click')
+//     rightTracksClick = document.getElementById('tracks-right-click')
     
-    leftTracksClick.addEventListener("click", (e) => {
+//     leftTracksClick.addEventListener("click", (e) => {
 
-        leftTracks.classList.add('tracks-animate-left')
-        console.log("You clicked", e.currentTarget)
-        console.log("CLicked the left container")
-        setTimeout(() => leftTracks.classList.remove('tracks-animate-left'), 2000)
-    }
-    )
+//         leftTracks.classList.add('tracks-animate-left')
+//         console.log("You clicked", e.currentTarget)
+//         console.log("CLicked the left container")
+//         setTimeout(() => leftTracks.classList.remove('tracks-animate-left'), 2000)
+//     }
+//     )
 
-    rightTracksClick.addEventListener("click", (e) => {
+//     rightTracksClick.addEventListener("click", (e) => {
  
-        rightTracks.classList.add('tracks-animate-right')
-        console.log("You clicked", e.currentTarget)
-        console.log("CLicked the right container")
-        setTimeout(() => rightTracks.classList.remove('tracks-animate-right'), 2000)
-        }
+//         rightTracks.classList.add('tracks-animate-right')
+//         console.log("You clicked", e.currentTarget)
+//         console.log("CLicked the right container")
+//         setTimeout(() => rightTracks.classList.remove('tracks-animate-right'), 2000)
+//         }
         
-    )
+//     )
 
-}
+// }
 
-// Wait for the page to load before attaching the event listeners
-// Only load turnPage if we're on the jukebox page.
-window.onload = () => {
-    if (document.getElementById('jukebox-tracks')) {
-        turnPage();
-    }
-}
+// // Wait for the page to load before attaching the event listeners
+// // Only load turnPage if we're on the jukebox page.
+// window.onload = () => {
+//     if (document.getElementById('jukebox-tracks')) {
+//         turnPage();
+//     }
+// }
 
