@@ -347,30 +347,6 @@ def page_not_found(e):
 
     return render_template('404.html'), 404
 
-# @app.after_request
-# def response_trigger(response):
-
-#     """
-#         Runs after giving a response to fetch additional image urls. 
-#     """
-#     @response.call_on_close
-#     def process_after():
-#         songs = Song.query.filter(Song.missing_page != True).limit(2)
-
-#         for song in songs:
-#             # Check if artist page has been searched for
-#             if song.artist_page == "Not Queried":
-            
-#                 # Check if artist page search turned up empty
-#                 if song.find_artist_page() != False:
-                
-#                     # Search for an image
-#                     song.get_artist_image()
-#                     print("fetched a song image")
-        
-#         pass
-#     return response
-
 ################### AFTER (Caching) ###################
 @app.after_request
 def add_header(req):
