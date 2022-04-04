@@ -166,11 +166,23 @@ html {
 
 .track-art {
   vertical-align: top;
+  max-height: 106px;
 }
 
 .track-details {
   font-size: .8rem;
   padding-left: 5%;
+}
+
+.top-track-row {
+  text-align: center;
+  border-top: 2px solid black;
+  border-bottom: 1px solid black;
+}
+
+.lower-track-row {
+
+  border-bottom: 2px solid black;
 }
 
 .left-sidebar, .right-sidebar {
