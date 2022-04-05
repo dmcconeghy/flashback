@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 
-from models import db, connect_db
+from models import db
 
 os.environ['DATABASE_URL'] = "postgresql:///flashback-test"
 
@@ -10,6 +10,7 @@ from app import app
 app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
+db.drop_all()
 db.create_all()
 
 app.config['WTF_CSRF_ENABLED'] = False
@@ -68,7 +69,7 @@ class Is404TestCase(TestCase):
             self.assertIn("I Still Haven't Found What I'm Looking For", html)
 
 
-################### ADDITIONAL INTEGRATION TESTS FROM ROUTES IN APP.PY###################
+################### ADDITIONAL INTEGRATION TESTS FROM ROUTES IN app.py###################
 
 #testing do_login and do_logout
 #testing logged in user arrival at /signup or /login
