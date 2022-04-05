@@ -1,3 +1,4 @@
+from logging import warning
 from flask import render_template, redirect, flash
 from models import Chart, Song, ChartAppearance, db
 import billboard
@@ -192,9 +193,18 @@ def search():
 
     if form.validate_on_submit():
         inputted_date = form.date.data
-        
+        print(inputted_date)
+
+        if inputted_date >= datetime.date.today():
+            flash("Can't Tell the Future!", 'warning')
+            return render_template("navbar/search.html", form=form)
+
+        if inputted_date <= datetime.date(1958, 8, 4):
+            flash("Oldest Chart is from August 4th, 1958!", 'warning')
+            return render_template("navbar/search.html", form=form)
+
         return redirect(f"/exists/{inputted_date}")
-        
+      
     return render_template("navbar/search.html", form=form)
 
 def random_chart():
