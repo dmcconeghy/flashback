@@ -52,7 +52,7 @@ class TestSongRoutes(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('I&#39;m Your Angel', html)
         
-################### ADDITIONAL INTEGRATION TESTS FROM ROUTES IN search.py###################
+################### ADDITIONAL INTEGRATION TESTS FROM ROUTES IN song.py###################
 
 #testing song_gallery -- feature deprecated
 #testing listing -- feature deprecated
