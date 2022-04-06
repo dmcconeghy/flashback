@@ -71,15 +71,5 @@ class Is404TestCase(TestCase):
 
 ################### ADDITIONAL INTEGRATION TESTS FROM ROUTES IN app.py###################
 
-#testing do_login and do_logout
-#testing logged in user arrival at /signup or /login
-#testing login in as user
-#testing logout as user
-#testing signup as new user
-#testing unauthorized acces to user profile
-#testing user profile page
-#testing favorites form user page
-#testing birthday charts / add birthday logic
-#testing adding and removing favorites from user page
-#testing can update user profile
-#testing can delete user profile
+# User based routes from app.py are tested in test_user.py
+# Favorite routes are testing in test_favorites.py
