@@ -155,7 +155,7 @@ def show_user_page(user_id):
     favorites = Favorite.query.all()
     favorites_ids = [f.song_id for f in favorites]
 
-    songbank = Song.query.filter(Song.id.notin_(favorites_ids)).limit(10).all()
+    songbank = Song.query.filter(Song.id.notin_(favorites_ids)).limit(20).all()
     # songbank_ids = [s.id for s in songbank]
 
     form.song.choices = [(s.id, (f"{s.title} by {s.artist}")) for s in songbank]
@@ -224,19 +224,25 @@ def remove_favorites(user_id, song_id):
     if user_id != g.user.id:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
-    remove_favorite = (
-        Favorite
-        .query
-        .filter(
-        and_(
-            Favorite.user_id==g.user.id, 
-            Favorite.song_id==song_id)
-            )
-        .first())
     
-    db.session.delete(remove_favorite)
-    db.session.commit()
+    user = g.user
+    
+    favorite_ids = [f.song_id for f in user.favorite_songs]
+
+    if song_id in favorite_ids:
+
+        remove_favorite = (Favorite
+                            .query
+                            .filter(
+                            and_(
+                                Favorite.user_id==user_id, 
+                                Favorite.song_id==song_id)
+                                )
+                            .first())
+
+        
+        db.session.delete(remove_favorite)
+        db.session.commit()    
 
     removed_favorite = Song.query.get_or_404(song_id)
 
