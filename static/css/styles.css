@@ -20,9 +20,6 @@ html {
   100% { transform: rotate(360deg); }
 }
 
-.nav .text-warning:hover {
-    color: white;
-}
 
 .carousel-control-prev,
 .carousel-control-next {
