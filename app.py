@@ -10,6 +10,7 @@ import views.chart as chart
 import views.song as song
 import views.search as search
 import views.utilities as utilities
+import datetime
 
 
 
@@ -249,6 +250,15 @@ def update_profile():
 
     if form.validate_on_submit():
         if User.authenticate(user.username, form.password.data):
+
+            if form.date_of_birth.data >= datetime.date.today():
+                flash("You haven't been born yet!", 'danger')
+                return render_template("/users/edit.html", form=form, user=user)
+
+            if form.date_of_birth.data <= datetime.date(1903, 1, 2):
+                flash("You're older than Kane Tanaka, the oldest person alive!", 'danger')
+                return render_template("/users/edit.html", form=form, user=user)
+
             user.username = form.username.data
             user.email = form.email.data
             user.profile_img_url = form.profile_img_url.data or "/static/media/blank_profile.png"
