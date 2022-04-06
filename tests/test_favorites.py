@@ -1,6 +1,5 @@
 import os
 from unittest import TestCase
-from flask import session
 from models import db, Chart, Song, User, Favorite
 
 os.environ['DATABASE_URL'] = "postgresql:///flashback-test"
