@@ -133,6 +133,10 @@ def show_user_page(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+    
+    if user_id != g.user.id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     user = User.query.get_or_404(user_id)
 
@@ -202,6 +206,14 @@ def logout():
 
 @app.route('/users/<int:user_id>/removefavorite/<int:song_id>', methods=['POST'])
 def remove_favorites(user_id, song_id):
+
+    if not g.user:
+        flash("Access unauthorized", "danger")
+        return redirect("/")
+
+    if user_id != g.user.id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     remove_favorite = (
         Favorite
