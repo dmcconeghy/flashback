@@ -4,3 +4,4 @@ __pycache__
 dbsecrets.py
 date.py
 /templates/artists
+iTunes_Sample.json
