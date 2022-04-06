@@ -43,6 +43,20 @@ class TestSearchForm(TestCase):
         Does the Random Chart feature work?
         Does it handle bad data inputs?
     """
+    def setUp(self):
+        """Add a new chart"""
+
+        Chart.query.delete()
+        Song.query.delete()
+
+        with app.test_client() as client:
+            d = {"date" : "1999-01-02"}
+            client.post('/search', data=d, follow_redirects=True)
+
+    def tearDown(self):
+        """Clean up db"""
+
+        db.session.rollback()
 
     def test_search_handles_bad_random_date(self):
         """ 
@@ -91,10 +105,23 @@ class TestChartExists(TestCase):
             With a known chart, does that page's chart exist?
             This chart also tests chart_search's input of Chart data to db
         """
-        
+        def setUp(self):
+            """Add a new chart"""
+
+            Chart.query.delete()
+            Song.query.delete()
+
+            with app.test_client() as client:
+                d = {"date" : "1999-01-02"}
+                client.post('/search', data=d, follow_redirects=True)
+
+        def tearDown(self):
+            """Clean up db"""
+
+            db.session.rollback()
+
         with app.test_client() as client:
-            db.drop_all()
-            db.create_all()
+            
             d = {"date" : "1999-01-02"}
         
             resp = client.post('/search', data=d, follow_redirects=True)
@@ -158,14 +185,6 @@ class TestChartFetchRoute(TestCase):
 
 ################### ADDITIONAL INTEGRATION TESTS FROM ROUTES IN search.py###################
 
-
-
-
 #testing chart_search that new chart doesn't add pre-existing song 
 #testing chart_search that new chart adds new chart appearance for pre-existing song
 #testing chart_search that new chart image get_data route for 404 or requests data
-
-
-  
- 
-
