@@ -193,7 +193,6 @@ def search():
 
     if form.validate_on_submit():
         inputted_date = form.date.data
-        print(inputted_date)
 
         if inputted_date >= datetime.date.today():
             flash("Can't Tell the Future!", 'warning')
