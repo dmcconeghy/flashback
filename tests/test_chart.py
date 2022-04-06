@@ -50,3 +50,7 @@ class TestCharts(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<a href="/chart/1999-01-02">Week of January 02, 1999</a>',  html)
+
+################### ADDITIONAL INTEGRATION TESTS FROM ROUTES IN chart.py###################
+
+# Favorite routes are testing in test_favorites.py
