@@ -1,8 +1,5 @@
 """SQLAlchemy models for Flashback."""
 
-# from datetime import datetime
-
-from bs4 import BeautifulSoup
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
@@ -28,7 +25,6 @@ class Song(db.Model):
     charts = db.relationship('ChartAppearance')
     favorite = db.relationship('Favorite')
 
-    
 
 class ChartAppearance(db.Model):
     """ 
