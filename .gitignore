@@ -2,3 +2,5 @@ venv
 flashback.code-workspace
 __pycache__
 dbsecrets.py
+date.py
+/templates/artists
