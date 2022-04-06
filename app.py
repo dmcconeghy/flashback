@@ -76,7 +76,16 @@ def user_signup():
     form = SignupForm()
 
     if form.validate_on_submit():
-       
+
+        if form.date_of_birth.data >= datetime.date.today():
+            flash("You haven't been born yet!", 'danger')
+            return render_template("users/signup.html", form=form)
+
+        if form.date_of_birth.data <= datetime.date(1903, 1, 2):
+            flash("You're older than Kane Tanaka, the oldest person alive!", 'danger')
+            return render_template("users/signup.html", form=form)
+
+
         user = User.signup( 
             username = form.username.data, 
             password = form.password.data,

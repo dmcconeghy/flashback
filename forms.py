@@ -10,8 +10,8 @@ class DateSearchForm(FlaskForm):
 class SignupForm(FlaskForm):
     """ Signup form for a new user"""
 
-    username = StringField("username", validators=[DataRequired(), Length(min = 1, max=20)])
-    password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=100)])
+    username = StringField("Username (required)", validators=[DataRequired(), Length(min = 1, max=20)])
+    password = PasswordField("Password (required)", validators=[DataRequired(), Length(min=6, max=100)])
     email = EmailField("Email", validators=[Optional(), Email(), Length(max=75)])
     profile_img_url = StringField("Profile Image URL", validators=[URL(), Optional()])
     date_of_birth = DateField("Date of Birth", validators=[Optional()])
@@ -19,7 +19,7 @@ class SignupForm(FlaskForm):
 class LoginForm(FlaskForm):
     """ Login form for an existsing user"""
 
-    username = StringField("username", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[Length(min=6)])
 
 class NewSongForFavoriteList(FlaskForm):
