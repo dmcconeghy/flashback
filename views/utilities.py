@@ -1,8 +1,7 @@
 from flask import render_template
-from idna import ulabel 
 from models import ChartAppearance, Song, db, Chart
 import requests
-from bs4 import BeautifulSoup, SoupStrainer
+from bs4 import BeautifulSoup
 
 ################### PROJECT ROOT ###################    
 
@@ -25,7 +24,6 @@ def features():
 
     return render_template('navbar/features.html')
 
-
 ################### LOADING ###################
 
 def loading_screen():
@@ -42,7 +40,8 @@ def test_route():
     return render_template('test.html')
 
 ################### ARTIST IMAGE ###################
-
+# This route is currently depreacted and inaccessible
+# It has been replaced in search.py chart_search
 def get_artist_image(artist):
 
     hyphen_artist = artist.replace('&20', '-')
@@ -95,7 +94,8 @@ def get_artist_image(artist):
                             )
 
 ################### CHART IMAGEs ###################
-
+# This route is currently depreacted and inaccessible
+# It has been replaced in search.py chart_search
 def get_chart_images(chart_date):
 
     
