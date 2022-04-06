@@ -25,68 +25,10 @@ class Song(db.Model):
     title = db.Column(db.Text, nullable=False)
     artist = db.Column(db.Text, nullable=False)
     song_img_url = db.Column(db.Text, default='../static/media/missing_album_art.svg')
-    artist_page = db.Column(db.Text, default="Not Queried")
-    missing_image = db.Column(db.Boolean, default=None)
-    missing_page = db.Column(db.Boolean, default=None)
-
     charts = db.relationship('ChartAppearance')
     favorite = db.relationship('Favorite')
 
-    def has_image(self):
-
-        if self.missing_image == True:
-            return False
-        elif self.missing_image == False:
-            return True
-        else:
-            return None
-       
-    def find_artist_page(self):
-
-        hyphen_artist = self.artist.replace(' ', '-').lower()
-        formatted_url = f"http://billboard.com/artist/{hyphen_artist}"
-
-        r = requests.get(formatted_url)
-
-        if r.status_code != 404:
-
-            self.artist_page = formatted_url
-            self.missing_page = False
-            db.session.commit()
-        
-        else: 
-            print("Artist Page doesn't exist")
-            self.missing_page = True
-            db.session.commit()
-            return False
-
-    def get_artist_image(self):
-
-        # Only search if the artist page hasn't been queried
-        if self.artist_page != "Not Queried":
-            response_data = requests.get(self.artist_page).text
-            
-            soup = BeautifulSoup(response_data, 'html.parser')
-            alt = f"An image of {self.artist}"
-            print(alt)
-            img_element = soup.find('img', alt=alt)
-            print(img_element)
-
-            lazy_load = 'https://www.billboard.com/wp-content/themes/vip/pmc-billboard-2021/assets/public/lazyload-fallback.gif'
-
-            if img_element != None:
-                
-                if img_element['data-lazy-src'] != None and img_element['data-lazy-src'] != lazy_load:
-                    self.song_img_url = img_element['data-lazy-src']
-                    self.missing_image = False
-                elif img_element['src'] != lazy_load and img_element['src'] != None:
-                    self.song_img_url = img_element['src']
-                    self.missing_image = False  
-                
-            else:
-                self.missing_image = True 
-                return print("Artist Image Not Found")
-        db.session.commit()
+    
 
 class ChartAppearance(db.Model):
     """ 
