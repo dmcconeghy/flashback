@@ -77,11 +77,11 @@ def user_signup():
 
     if form.validate_on_submit():
 
-        if form.date_of_birth.data >= datetime.date.today():
+        if form.date_of_birth.data and form.date_of_birth.data >= datetime.date.today():
             flash("You haven't been born yet!", 'danger')
             return render_template("users/signup.html", form=form)
 
-        if form.date_of_birth.data <= datetime.date(1903, 1, 2):
+        if form.date_of_birth.data and form.date_of_birth.data <= datetime.date(1903, 1, 2):
             flash("You're older than Kane Tanaka, the oldest person alive!", 'danger')
             return render_template("users/signup.html", form=form)
 
@@ -240,7 +240,7 @@ def remove_favorites(user_id, song_id):
                                 )
                             .first())
 
-        
+
         db.session.delete(remove_favorite)
         db.session.commit()    
 
@@ -266,11 +266,11 @@ def update_profile():
     if form.validate_on_submit():
         if User.authenticate(user.username, form.password.data):
 
-            if form.date_of_birth.data >= datetime.date.today():
+            if form.date_of_birth.data and form.date_of_birth.data >= datetime.date.today():
                 flash("You haven't been born yet!", 'danger')
                 return render_template("/users/edit.html", form=form, user=user)
 
-            if form.date_of_birth.data <= datetime.date(1903, 1, 2):
+            if form.date_of_birth.data and form.date_of_birth.data <= datetime.date(1903, 1, 2):
                 flash("You're older than Kane Tanaka, the oldest person alive!", 'danger')
                 return render_template("/users/edit.html", form=form, user=user)
 
