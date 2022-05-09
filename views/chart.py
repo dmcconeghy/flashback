@@ -1,8 +1,6 @@
 from flask import render_template, flash, redirect, g, request
 from models import Chart, Song, ChartAppearance, Favorite, db
 from sqlalchemy import and_
-from bs4 import BeautifulSoup
-import requests
 
 def show_list_of_charts(page=1):
     """ 
@@ -57,7 +55,15 @@ def show_list_of_charts(page=1):
                                 chart_total=chart_total)
 
 def show_list_of_charts_favorites(page, song_id):
-    """Toggles a favorite song from the chart list to the user's favorites list"""
+    """
+    
+        Toggles a favorite song from the chart list to the user's favorites list.
+        
+        Checks for changes that may appear in the first five returned songs of a given chart. 
+
+        A JS refactoring in v2 would prevent page reloads. 
+        
+    """
 
     if not g.user:
         flash("You need to be logged in to save favorites.", "warning")
@@ -100,18 +106,11 @@ def show_list_of_charts_favorites(page, song_id):
 
 def show_chart(req_chart_date):
     """ 
-        Display a specific chart and its songs. Fetches image urls for every song.
+        Display a specific chart and its songs. 
 
-        This route must occur AFTER validation through /exists.
+        Checks first if a user is logged in, if so it marks their favorites in the list. 
 
-        todo: fix issues with duplicate entries cf. "Unchained Melody" from 10.06.90 - 3.23.91
-            There are two version on this chart but they're indistinguishable in single API data calls.
-            The original peaked at #4 in 08.28.65 but *also* charted in 1990. 
-            Presently, each duplicate entry adds a new Song entry, which isn't ideal. 
-            There are likely many other such re-charts and duplication oddities to handle. 
-
-        todo: Image URL retrieval currently overwrites urls rather than skipping them. 
-            Ideally a logic check would prevent these, but the pairing of rank/song has to be precise. 
+        Some oddities persist, such as the GHOST problem when "unchained melody" appeared twice in the same chart. 
         
     """
 
@@ -140,7 +139,11 @@ def show_chart(req_chart_date):
                                 favorites=favorites)
 
 def show_chart_favorites(chart_date, song_id):
-    """Toggles a favorite song from the chart list to the user's favorites list"""
+    """
+        Toggles a favorite song from a specific chart list to the user's favorites list.
+        A JS refactoring in v2 would prevent page reloads. 
+    
+    """
 
     if not g.user:
         flash("You need to log in to save favorites.", "warning")

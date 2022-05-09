@@ -3,7 +3,12 @@ from wtforms import DateField, StringField, PasswordField, EmailField, SelectFie
 from wtforms.validators import DataRequired, Email, Length, URL, Optional 
 
 class DateSearchForm(FlaskForm):
-    """Homepage route search for chart from a specific date"""
+    """
+    
+    Homepage route search for chart from a specific date.
+    Date validation logic found in search.py
+    
+    """
 
     date = DateField("Enter a Date after August 4, 1958")
   

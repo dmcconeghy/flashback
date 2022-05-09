@@ -4,7 +4,7 @@ from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
 from dateutil.relativedelta import relativedelta
-import requests
+
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -18,6 +18,7 @@ class Song(db.Model):
 
     # Billboard data as given from API calls to billboard.py
     # ChartData is fetched using ChartData(name, date=None, year=None, fetch=True, timeout=25)
+    # images endpoint does not work and is instantiated with a default art image. 
     
     title = db.Column(db.Text, nullable=False)
     artist = db.Column(db.Text, nullable=False)
@@ -56,7 +57,14 @@ class ChartAppearance(db.Model):
     isNew = db.Column(db.Boolean)
 
 class Chart(db.Model):
-    """A specific date's chart"""
+    """
+    
+        A specific date's chart. Charts have names and dates and a relationship to their songs. 
+
+        Methods include next/prior chart options for easy access in html pagination.
+        
+        
+    """
 
     __tablename__ = 'charts'
 
@@ -85,7 +93,12 @@ class Chart(db.Model):
         return date.fromordinal(prior_chart)
 
 class User(db.Model):
-    """An application user"""
+    """
+        An application user. 
+        Includes methods for returning birthday charts, 
+        signing up as a new user, and authenticating an existing user. 
+    
+    """
 
     __tablename__ = 'users'
 
@@ -120,9 +133,10 @@ class User(db.Model):
 
     @classmethod
     def signup(cls, username, password, email, profile_img_url, date_of_birth):
-        """Sign up user.
+        """
+            Sign up user.
+            Hashes password and adds user to system.
 
-        Hashes password and adds user to system.
         """
 
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
@@ -140,12 +154,14 @@ class User(db.Model):
 
     @classmethod
     def authenticate(cls, username, password):
-        """Find user with `username` and `password`.
+        """
+            Find user with `username` and `password`.
 
-        This is a class method (call it on the class, not an individual user.)
-        It searches for a user whose password hash matches this password
-        and, if it finds such a user, returns that user object.
-        If can't find matching user (or if password is wrong), returns False.
+            This is a class/static method 
+            It searches for a user whose password hash matches this password
+            and, if it finds such a user, returns that user object.
+            If it can't find matching user (or if password is wrong), returns False.
+
         """
 
         user = cls.query.filter_by(username=username).first()
@@ -158,7 +174,10 @@ class User(db.Model):
         return False
 
 class Favorite(db.Model):
-    """User favorites"""
+    """
+        User favorites. Intersection of a user and a song key with single reference id. 
+    
+    """
 
     __tablename__= 'favorites'
 

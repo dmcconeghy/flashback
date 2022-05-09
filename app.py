@@ -65,7 +65,15 @@ def do_logout():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def user_signup():
-    """ Show a signup form"""
+    """ 
+    
+        Show a signup form to users not logged in session. 
+
+        Has minor logic for birthdate validation. 
+        Additional form validation by WTForms 
+    
+    
+    """
 
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
@@ -110,7 +118,11 @@ def user_signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """ Handle user login """
+    """ 
+    
+        Handle user login 
+    
+    """
 
     form = LoginForm()
     
@@ -130,6 +142,12 @@ def login():
 @app.route('/user')
 def user_redirect():
 
+    """
+        Prevents non-logged users from accessing user pages. 
+    
+    """
+
+
     if not g.user:
         flash("Please signup for an account or log in", "warning")
         return redirect("/signup")
@@ -138,7 +156,16 @@ def user_redirect():
 
 @app.route('/users/<int:user_id>', methods=['GET', 'POST'])
 def show_user_page(user_id):
-    """Show a logged in user their personal user page"""
+    """
+    
+        Show a logged in user their personal user page. 
+
+        This loads user profile details including favorite songs, and birthday charts. 
+
+        Allows quick removal of user favorites or 
+        option to add a favorite from a preselected list of non-favorited songs. 
+    
+    """
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -217,6 +244,12 @@ def logout():
 @app.route('/users/<int:user_id>/removefavorite/<int:song_id>', methods=['POST'])
 def remove_favorites(user_id, song_id):
 
+    """
+    
+        Removes favorites from the user's profile page. 
+    
+    """
+
     if not g.user:
         flash("Access unauthorized", "danger")
         return redirect("/")
@@ -255,6 +288,14 @@ def remove_favorites(user_id, song_id):
 @app.route('/users/profile', methods=['GET', 'POST'])
 def update_profile():
 
+    """
+    
+        Allows a logged and authenticated user access to updat their profile. 
+        Includes validation for user birthday charts date entry. 
+        Requires valid credentials to save changes. 
+    
+    """
+
     if not g.user:
         flash("Access unauthorized", "danger")
         return redirect('/')
@@ -290,6 +331,10 @@ def update_profile():
 
 @app.route('/users/delete', methods=['GET','POST'])
 def delete_profile():
+    """
+        If authorized and logged in, allows a user to delete their profile. 
+    
+    """
 
     if not g.user:
             flash("Access Unauthorized. Please Log in", "danger")
@@ -317,8 +362,10 @@ def delete_profile():
 #
 #   See charts.py for:
 # 
+#   def show_list_of_charts / show_list_of_charts(page) for all charts in the database
 #   def show_chart(req_chart_date) for a specific date's chart
-#   def show_list_of_charts() for all charts in the database   
+#   def show_list_of_charts_favorites & show_chart_favorites add user favorite feature
+#     
 #
 app.add_url_rule('/charts', view_func=chart.show_list_of_charts, methods=['GET', 'POST'])
 app.add_url_rule('/charts/<int:page>', view_func=chart.show_list_of_charts, methods=['GET', 'POST'])
@@ -332,7 +379,8 @@ app.add_url_rule('/charts/<int:page>/favorite/<int:song_id>', view_func=chart.sh
 #   def show_list_of_songs(page=1) for a paginated list of songs in the database
 #   def show_song_details(song_id) for a detailed song page
 #   def show_song_gallery() for a gallery version of a selection of songs in the database
-#   def listing() for a jukebox style version of chart information
+#   def listing() for a jukebox style version of chart information | Not fully implemented in v1.
+#   def toggle_songs_like & toggle_song_like add user favorite feature.
 # 
 app.add_url_rule('/songs', view_func=song.show_list_of_songs, methods=['GET', 'POST'])
 app.add_url_rule('/songs/<int:page>', view_func=song.show_list_of_songs, methods=['GET', 'POST'])
@@ -364,8 +412,8 @@ app.add_url_rule('/random', view_func=search.random_chart, methods=['GET', 'POST
 #   def about() returns the about this project page
 #   def loading_screen() supplies a loading modal for timed queries
 #   def test_route() exists for temporary feature testing
-#   def get_artist_image(artist) is a route to test image scraping for individual artists
-#   def get_chart_images(chart_date) is a route to test image scraping for chart instances
+#   def get_artist_image(artist) is a route to test image scraping for individual artists | deprecated / test-only
+#   def get_chart_images(chart_date) is a route to test image scraping for chart instances | deprecated / test-only
 #   
 app.add_url_rule('/', view_func=utilities.root, methods=['GET', 'POST'])
 app.add_url_rule('/about', view_func=utilities.about)

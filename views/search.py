@@ -16,7 +16,7 @@ def chart_exists(chart_date):
         """ 
             Does our chart date exist already? 
             Yes? Return db version.
-            No? Fetch it. 
+            No? Fetch it by calling search/<date> endpoint. 
         """
         
         found_chart = (Chart
@@ -39,8 +39,9 @@ def chart_exists(chart_date):
         
 def chart_search(chart_date):
     """ 
-    Creates a chart entry and populates the db with songs and appearance data.
-    It then queries the chart to scrape image urls and commits those to the songs. 
+        Creates a chart entry and populates the db with songs and appearance data.
+        It then queries the chart to scrape image urls and commits those to the songs.
+        This replaces a broken API image endpoint that should have been called here, too.  
     
     """
 
@@ -49,7 +50,7 @@ def chart_search(chart_date):
     new_chart = Chart(
         name=fetched_chart.name,
         chart_date=fetched_chart.date
-        # consider fetching chartData for entries?
+        
     )
 
     db.session.add(new_chart)
@@ -64,7 +65,8 @@ def chart_search(chart_date):
         
         if song_exists != [] and song_exists != None:
             
-            # Check that the appearance data is different (e.g, 1990-11-11 Unchained Meloday appears twice)
+            # Check that the appearance data is different (e.g, 1990-11-11 Unchained Meloday appears twice aka the GHOST problem)
+            # Without this check, the same song from two different releases/albums appearing in the same chart causes a DB error. 
             if ChartAppearance.query.filter(and_(ChartAppearance.song_id == song_exists.id, ChartAppearance.chart_date == fetched_chart.date)).first():
                 new_song = Song(
                     title = entry.title, 
@@ -85,6 +87,7 @@ def chart_search(chart_date):
                     chart_date = new_chart.chart_date
                 )
 
+            # must be an existing song with a new appearance. 
             else: 
                 new_appearance = ChartAppearance(
                     chart_id = new_chart.id,
@@ -100,6 +103,7 @@ def chart_search(chart_date):
                 db.session.add(new_appearance)
                 db.session.commit()
 
+        # Must be a new song and a new appearance
         else:
             
 
@@ -125,10 +129,15 @@ def chart_search(chart_date):
             db.session.add(new_appearance)
             db.session.commit()
     
+
+    # This logic replaces the missing entry.image data from the broken API endpoint.
+    # In v2 this logic should be refactored out of our search view.  
     BASE_URL = "http://billboard.com/charts/hot-100/"
 
     URL = BASE_URL + query_date
     
+
+    # Make the request for the specified date
     def get_data(url):
         r = requests.get(url)
         if r.status_code != 404:
@@ -137,6 +146,16 @@ def chart_search(chart_date):
             return "Not Found"
     
     htmldata = get_data(URL)
+
+    # If the data exists, parse it. 
+    # First select the chart-results-list section of the html
+    # Then the specific results where the images are contains. 
+    # For each item, grab its img_element
+    # Then check if the image is a default or not. 
+    # If not a default, get the url. 
+    # Finally, use zip to combine the lists of img urls and the ordered rank appearances. 
+    # Appearances MUST be queried indepdently and after initial DB entry. 
+    # This ensures that songs appearing in the DB for other charts don't get skipped, misaligning the zip. 
 
     if htmldata != "Not Found":
         raw = BeautifulSoup(htmldata, 'html.parser')
@@ -184,8 +203,7 @@ def search():
     """ 
         Handles user-selected date requests.
         Passes dates to chart_search
-
-        todo: handle date range validation
+        Validates that dates aren't future or before 8/4/1958. 
 
     """
 
@@ -207,6 +225,9 @@ def search():
     return render_template("navbar/search.html", form=form)
 
 def random_chart():
+    """
+        Returns a random date's chart between 8/4/58 and the current date. 
+    """
     
     earliest = datetime.date(1958, 8, 4)
     latest = datetime.date.today()

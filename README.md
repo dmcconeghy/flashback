@@ -17,6 +17,3 @@ Database population is performed upon first request, with massive reductions in 
 ### Original Proposal by Dave McConeghy
 Feel free to check out my initial proposal. 
 [View this proposal in Google Docs](https://docs.google.com/document/d/1gXzn_mwFInoAnlA48n6XPhq4FItoeB0_nv4R6NYPp1A/edit?usp=sharing)
-
-
-

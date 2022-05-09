@@ -27,12 +27,24 @@ def features():
 ################### LOADING ###################
 
 def loading_screen():
+    """
+        The loading modal is a bootstrapped widget. 
+        It appears as a span or link invoked modal. 
+        This causes some minor issues when backtracking due to cacheing.  
+    
+    """
+
 
     return render_template('loading.html')
 
 ################### TEST ###################
 
 def test_route():
+    """
+        In testing this route was a clearinghouse for query logic. 
+        Inaccessible presently except by direct link.
+    
+    """
 
     test = db.session.query(Song.id, Song.title).limit(10).all()
 

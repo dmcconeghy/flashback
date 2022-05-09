@@ -5,7 +5,11 @@ from sqlalchemy import and_
 
 
 def show_list_of_songs(page=1):
-    """ Returns a list of database stored songs from queried charts """
+    """ 
+    
+        Returns a list of all database stored songs from queried charts 
+    
+    """
     q = request.args.get('page')
 
     if q:
@@ -33,6 +37,11 @@ def show_list_of_songs(page=1):
 
 def show_song_details(song_id):
 
+    """
+        For any specific song, displays a page with its appearance details. 
+    
+    """
+
     song = Song.query.get_or_404(song_id)
                 
     if not g.user:
@@ -46,7 +55,13 @@ def show_song_details(song_id):
 
 
 def show_song_gallery():
-    """ Returns a scrollable gallery of songs. """
+    """ 
+    
+        Returns a scrollable gallery of songs. 
+        This route is presently hidden for future feature implementation.
+    
+    
+    """
 
     songs = Song.query.limit(20).all()
 
@@ -64,13 +79,25 @@ def show_song_gallery():
 
 def listing():
 
+    """
+        This experimental route attempts to recreate the look and feel of a classic jukebox. 
+        JS previously allowed cards to "turn" or "flip," but the animation needed considerable improvement. 
+        This was one substitute considered when the billboard.py API's image endpoint failed. 
+        Inaccessible except by direct link.
+    
+    """
+
     songs = Song.query.limit(20).all()
 
     return render_template('songs/listing.html', songs=songs)
 
 
 def toggle_songs_like(page, song_id):
-    """Toggles a favorite song from the songs list to the user's favorites list"""
+    """
+        Toggles a favorite song from the songs list to the user's favorites list.
+        A JS refactoring in v2 would prevent page reloads. 
+        
+        """
 
     if not g.user:
         flash("You need to log in to save favorites.", "warning")
@@ -112,7 +139,12 @@ def toggle_songs_like(page, song_id):
     return redirect(f"/songs/{page}")
 
 def toggle_song_like(song_id):
-    """Toggles a favorite song from the song page for the user's favorites list"""
+    """
+    
+        Toggles a favorite song from the song page for the user's favorites list
+        A JS refactoring in v2 would prevent page reloads. 
+        
+        """
 
     if not g.user:
         flash("You need to log in to save favorites.", "warning")
