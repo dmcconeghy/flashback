@@ -180,7 +180,7 @@ def show_user_page(user_id):
 
     form = NewSongForFavoriteList()
 
-    favorites = Favorite.query.all()
+    favorites = Favorite.query.filter(Favorite.user_id == user_id).all()
     favorites_ids = [f.song_id for f in favorites]
 
     songbank = Song.query.filter(Song.id.notin_(favorites_ids)).limit(20).all()
@@ -291,7 +291,7 @@ def update_profile():
 
     """
     
-        Allows a logged and authenticated user access to updat their profile. 
+        Allows a logged and authenticated user access to update their profile. 
         Includes validation for user birthday charts date entry. 
         Requires valid credentials to save changes. 
     
