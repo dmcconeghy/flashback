@@ -95,6 +95,13 @@ def user_signup():
             return render_template("users/signup.html", form=form)
 
 
+        # WTForms has deprecated the unique validator. We need to check for duplicate usernames or risk a db error.
+        # With a small number of usernames, this is a quick fix. At scale we should write a custom validator. 
+         
+        if (User.query.filter(User.username == form.username.data).first()) is not [] or None: 
+            flash("Your chosen username is already take. Please select another.", 'warning')
+            return render_template("users/signup.html", form=form)
+
         user = User.signup( 
             username = form.username.data, 
             password = form.password.data,
