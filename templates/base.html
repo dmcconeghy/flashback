@@ -23,7 +23,7 @@
       crossorigin="anonymous"
     ></script>
   </head>
-
+  <a id="top"></a>
   <header class="text-white bg-dark pb-2 pt-2">
     <div class="navbar navbar-expand-md navbar-dark ">
       <div class="ml-3">
@@ -105,10 +105,13 @@
     </div>
   </header>
   <body>
+    
     {% for category, msg in get_flashed_messages(with_categories=True) %}
     <div class="alert alert-{{category}}">{{ msg }}</div>
-    {% endfor %} {% block content %}{% endblock %} {% include 'loading.html' %}
-
+    {% endfor %} {% block content %}{% endblock %} 
+    
+    {% include 'loading.html' %}
+    
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
