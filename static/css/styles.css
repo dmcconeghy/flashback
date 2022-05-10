@@ -192,3 +192,36 @@ html {
   border: none;
 }
 
+.rank {
+  font-size: 5vw;
+}
+
+.chart-data {
+  font-size: 1.5vw;
+}
+
+.h100-date {
+  font-size: 3.75vw;
+}
+
+
+@media (max-width: 575.98px) {
+  .toggle {
+    visibility: hidden;
+    height: 2px;
+  }
+
+  .h100-date {
+    font-size: 5vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .h100-date {
+    font-size: 2.75vw;
+  }
+
+  .rank {
+    font-size: 4vw;
+  }
+}

@@ -3,70 +3,72 @@
 {% block title %} TEST {% endblock %}
 
 {% block content %} 
-<div class="container-fluid col-sm-12 col-md-10 col-lg-10 col-xl-8 col-xxl-6">
-    <h1>The Hot 100 on {{chart.chart_date.strftime("%B %d, %Y")}} </h1>
-	<div class="row bg-info">
-		<div class="col-sm-9"> THIS WEEK {{chart.date}}
+<div class="container">
+
+	<div class="row sticky-top bg-white mt-2 text-center-small">
+
+		<div class="col-11 text-center text-sm-left col-sm-8 col-xl-9 mt-2"> <p class="h100-date">The Hot 100 on {{chart.chart_date.strftime("%B %d, %Y")}} </p>
 		</div>
-		<div class="col-sm-1 small"> LAST WEEK
-		</div>
-		<div class="col-sm-1 small"> PEAK POSITION
-		</div>
-		<div class="col-sm-1 small"> WEEKS ON CHART
-		</div>
-	</div>
+            
+            <div class="toggle col-sm-1 offset-sm-1 offset-xl-0 chart-data text-center mt-sm-3"> LAST WEEK
+            </div>
+
+            <div class="toggle col-sm-1 text-center chart-data mt-sm-3"> PEAK SPOT
+            </div>
+
+            <div class="toggle col-sm-1 text-center chart-data mt-sm-3"> WEEKS CHARTED
+            </div>
+    </div>
+    <hr class="w-100 bg-dark">
+	
+    
         
     {% for song, appearance in results %}
     
-        <div class="row">
-            <div class="col-sm-1 text-center align-middle"> {{appearance.rank}}
-            </div>
-            <div class="col-sm-1 ">
-                <img class="img-fluid img-thumbnail" src="{{song.song_img_url}}" alt="default album image" width="50px">
-            </div>
-            <div class="col-sm-7 text-left align-middle">
-                <form method="POST" 
-                                action="/chart/{{chart.chart_date}}/favorite/{{song.id}}" 
-                                class="float-left" 
-                                name="favorite-form">
-                                <button 
-                                    class="btn p-0 mr-1" 
-                                    type="submit"
-                                    data-bs-toggle="tooltip" 
-                                    data-bs-placement="top" 
-                                    title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
-                                    <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
-                                 </button>
-                             </form>
-                {{(song.title) | truncate(20) }} by {{song.artist | truncate(25) }}
+        <div class="row col-12 p-0 mx-0 ">
+            
+                <div class="col-1 col-sm-1 rank"><p>{{appearance.rank}}</p>
+                </div>
+
+                <div class="col-3 col-sm-2">
+                    <a href="/song/{{song.id}}"><img class="img-fluid" src="{{song.song_img_url}}" alt="default album image" width="150px" ></a>
+                </div>
+        
+            
+                <div class="col-8 col-sm-6 text-left align-middle">
+                    <form method="POST" 
+                                    action="/chart/{{chart.chart_date}}/favorite/{{song.id}}" 
+                                    class="float-left" 
+                                    name="favorite-form">
+                                    <button 
+                                        class="btn p-0 mr-1" 
+                                        type="submit"
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="{{'Remove from favorites' if song.id in favorites else 'Add to favorites'}}">
+                                        <i class="{{'fa-solid fa-star' if song.id in favorites else 'fa-regular fa-star'}}"></i>
+                                    </button>
+                    </form>
+                    <a href="/song/{{song.id}}">{{(song.title) | truncate(18) }}</a> by {{song.artist | truncate(20) }} 
+                </div>
+
+                    <div class="toggle col-sm-1 text-right"> {{appearance.last_pos}}
+                    </div>
+
+                    <div class="toggle col-sm-1 text-right">{{appearance.peak_pos}}
+                    </div>
+                    
+                    <div class="toggle col-sm-1 text-right">{{appearance.weeks}}
+                    </div>
                 
-            </div>
-            <div class="col-sm-1 text-center"> {{appearance.last_pos}}
-            </div>
-            <div class="col-sm-1 text-center">{{appearance.peak_pos}}
-            </div>
-            <div class="col-sm-1 text-center">{{appearance.weeks}}
-            </div>
         </div>
+        
     
     {% endfor %}
+
+    </div>
+
 </div>
 
 {% endblock %}
 
-<!-- <li>
-                    
-                    {{entry.title}} by {{entry.artist}}
-                    
-                </li> -->
-
-                <!-- <div class="card" style="width: 18rem">
-                    <img src="{{ entry.image }}" class="card-img-top" alt=""/>
-                    <div class="div card-body">
-                        <img class="card-image" src="../static/media/musical_placeholder.jpg">
-                        <h5 class="card-title">{{entry.rank}}:{{entry.title}} by {{entry.artist|truncate(20)}}</h5>
-                        <p class="card-text">Highest position: {{entry.peakPos}} </p>
-                        <p class="card-text">{{entry.weeks}} weeks on chart</p>
-                        
-                    </div>
-                </div> -->
