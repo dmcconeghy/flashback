@@ -11,6 +11,7 @@ import views.song as song
 import views.search as search
 import views.utilities as utilities
 import datetime
+import validators
 
 
 
@@ -317,7 +318,11 @@ def update_profile():
 
             user.username = form.username.data
             user.email = form.email.data
-            user.profile_img_url = form.profile_img_url.data or "/static/media/blank_profile.png"
+            if validators.url(form.profile_img_url.data) or form.profile_img_url.data == "/static/media/blank_profile.png":
+                user.profile_img_url = form.profile_img_url.data
+            else:
+                form.profile_img_url.data == "/static/media/blank_profile.png"
+
             user.date_of_birth = form.date_of_birth.data
 
             db.session.commit()
