@@ -3,6 +3,15 @@ flashback.code-workspace
 __pycache__
 dbsecrets.py
 date.py
-/templates/artists
+
 iTunes_Sample.json
 SCHEMA.md
+
+/* Routes hidden for testing and/or future development */
+
+/templates/artists
+/templates/charts/fetch_chart_art.html
+/templates/charts/results.html
+/templates/songs/fetch_chart_art.html
+/templates/songs/fetch_song_art.html
+/templates/songs/song_gallery.html
