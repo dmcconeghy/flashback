@@ -74,23 +74,23 @@
   </div>
   <div class="row">
     
-    <div class="col-12 ml-0 pl-2">
-      <div class="d-flex row favorite-song-label">
+    <div class="col-12 col-md-10 col-lg-9 ml-0 pl-2">
+      <div class="d-flex row favorite-song-label col">
         {% if favorites %}
-        <div class="h5 col container pt-4 pl-5 text-left">You've favorited {{favorites | length}} song(s):</div>
+        <div class="h4 col container pt-4 pl-5 text-left">You've favorited {{favorites | length}} song(s):</div>
         {% else %}
-        <div class="h5 col container pt-4 pl-5 text-left">No favorite songs added yet</div>
+        <div class="h4 col container pt-4 pl-5 text-left">No favorite songs added yet</div>
         {% endif %}
       </div>
       <div class="d-flex row ml-3">
         
-        <div class="container-fluid col-12 col-sm-6">
+        <div class="container-fluid col-offset-1 col-md-6 col-lg-6 ">
           <ul> 
               {% for song in songs %}
               <div class="row">
                 <li>
                   <span>
-                  <a href="/song/{{song.id}}" class="h6">{{song.title | truncate(15)}}</a> by {{song.artist | truncate(15)}}
+                  <a href="/song/{{song.id}}" class="h6">{{song.title | truncate(20)}}</a> by {{song.artist | truncate(20)}}
                     <form method="POST" 
                       action="/users/{{user.id}}/removefavorite/{{song.id}}" 
                       class="float-right" 
@@ -114,7 +114,7 @@
           </ul>
         
         </div>
-        <div class="row col-12 col-sm-6 mx-auto ml-1">
+        <div class="row col-md mx-auto ml-3">
          
           <form name="form" id="form" method="POST">
               {{ form.hidden_tag() }}

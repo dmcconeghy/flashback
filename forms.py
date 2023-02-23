@@ -30,7 +30,7 @@ class LoginForm(FlaskForm):
 class NewSongForFavoriteList(FlaskForm):
     """ Form for adding songs to favorites """
 
-    song = SelectField('Add randomly selected songs to your favorites!', coerce=int)
+    song = SelectField('Add Randomly selected songs to your favorites!', coerce=int)
 
 class UpdateProfile(FlaskForm):
     """Form for updating a user's' profile"""
