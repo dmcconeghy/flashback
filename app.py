@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, redirect, session, flash, g, request
+from flask import Flask, render_template, redirect, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import and_
 
@@ -11,9 +11,6 @@ import views.song as song
 import views.search as search
 import views.utilities as utilities
 import datetime
-import validators
-
-
 
 CURR_USER_KEY = 'current_user'
 CURR_CHART = 'current_date'
